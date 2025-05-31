@@ -23,6 +23,8 @@
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
+    "@gltf-transform/core": "^4.1.4",
+    "@gltf-transform/functions": "^4.1.4",
     "@tailwindcss/postcss": "^4",
     "eslint": "^9",
     "eslint-config-next": "15.3.3",
@@ -30,11 +32,3 @@
     "typescript": "^5.3.3"
   }
 }
-
-
-
-
-
-
-
-

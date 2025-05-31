@@ -143,7 +143,7 @@ export default function Bee3D({ size = 300 }) {
       model = gltf.scene;
       
       // Scale and position - adjusted for production
-      model.scale.set(3.0, 3.0, 3.0);
+      model.scale.set(1.5, 1.5, 1.5);
       model.rotation.y = Math.PI * 0.15;
       model.rotation.x = Math.PI * 0.05;
       
@@ -279,15 +279,5 @@ export default function Bee3D({ size = 300 }) {
     </div>
   );
 }
-
-
-
-
-
-
-
-
-
-
 
 
