@@ -80,6 +80,20 @@ const nextConfig = {
       },
     ];
   },
+  // Add this to ensure 3D models are copied correctly
+  async headers() {
+    return [
+      {
+        source: '/3dmodel/:path*',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable',
+          },
+        ],
+      },
+    ];
+  },
   // Add static asset handling
   images: {
     domains: ['localhost'],
@@ -88,6 +102,7 @@ const nextConfig = {
 };
 
 export default nextConfig;
+
 
 
 

@@ -10,7 +10,7 @@
     "analyze": "ANALYZE=true next build",
     "build:prod": "next build && next-pwa",
     "start:prod": "NODE_ENV=production node .next/standalone/server.js",
-    "postbuild": "mkdir -p .next/standalone/public && cp -r public/* .next/standalone/public/ && cp -r .next/static .next/standalone/.next/"
+    "postbuild": "mkdir -p .next/standalone/public && cp -r public/* .next/standalone/public/ && cp -r .next/static .next/standalone/.next/ && cp -r public/3dmodel .next/standalone/public/"
   },
   "dependencies": {
     "@react-three/drei": "^9.88.17",
@@ -30,6 +30,7 @@
     "typescript": "^5.3.3"
   }
 }
+
 
 
 

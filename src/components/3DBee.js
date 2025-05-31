@@ -53,16 +53,15 @@ export default function Bee3D({ size = 300 }) {
     // Try multiple paths to find the model
     const possiblePaths = [
       '/3dmodel/bumblebee.glb',
-      './3dmodel/bumblebee.glb',
-      '../3dmodel/bumblebee.glb',
-      '/public/3dmodel/bumblebee.glb',
-      '/_next/static/media/bumblebee.glb'
+      '/3dmodel/bumblebee.optimized.glb', // Try optimized version too
     ];
 
-    // Add the current domain path as well
     if (typeof window !== 'undefined') {
       const baseUrl = window.location.origin;
-      possiblePaths.unshift(`${baseUrl}/3dmodel/bumblebee.glb`);
+      possiblePaths.forEach(path => {
+        // Add absolute URLs to the beginning of the array
+        possiblePaths.unshift(`${baseUrl}${path}`);
+      });
     }
 
     let loadAttempt = 0;
@@ -139,6 +138,13 @@ export default function Bee3D({ size = 300 }) {
 
     const handleError = (error) => {
       console.warn(`Failed to load from ${possiblePaths[loadAttempt]}:`, error);
+      // Log more details about the error
+      console.error('Error details:', {
+        path: possiblePaths[loadAttempt],
+        errorMessage: error.message,
+        errorType: error.type,
+        errorStack: error.stack
+      });
       loadAttempt++;
       tryNextPath();
     };
@@ -233,6 +239,8 @@ export default function Bee3D({ size = 300 }) {
     </div>
   );
 }
+
+
 
 
 
