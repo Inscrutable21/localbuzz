@@ -179,7 +179,7 @@ export default function Navbar3D({ initialMobile = false }) {
       {menuOpen && (
         <div className="fixed inset-0 bg-black z-40 flex flex-col md:flex-row overflow-hidden">
           {/* Left side menu content */}
-          <div className="w-full md:w-[35%] p-6 md:p-12 flex flex-col relative overflow-y-auto custom-scrollbar z-45">
+          <div className="w-full md:w-[35%] p-4 md:p-12 flex flex-col relative overflow-y-auto overflow-x-hidden custom-scrollbar z-45">
             {/* Close button - positioned on extreme left edge */}
             <div className="absolute top-4 md:top-6 left-4 md:left-6 z-50">
               <button 
@@ -312,43 +312,20 @@ export default function Navbar3D({ initialMobile = false }) {
             </div>
           </div>
           
-          {/* Bottom banner with social icons and marquee */}
-          <div className="fixed bottom-0 left-0 right-0 bg-[#7000ff] overflow-hidden z-47" style={{ borderRadius: "30px 30px 0 0" }}>
-            {/* Social icons inside the banner */}
-            <div className="flex justify-center items-center py-3 md:hidden">
-              <div className="flex space-x-8">
-                {/* Instagram */}
-                <a href="#" className="text-black hover:text-white">
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073z"/>
-                    <path d="M12 6.865c-3.396 0-6.135 2.739-6.135 6.135s2.739 6.135 6.135 6.135 6.135-2.739 6.135-6.135-2.739-6.135-6.135-6.135zm0 10.125c-2.205 0-3.99-1.785-3.99-3.99s1.785-3.99 3.99-3.99 3.99 1.785 3.99 3.99-1.785 3.99-3.99 3.99z"/>
-                    <circle cx="18.406" cy="5.594" r="1.44"/>
-                  </svg>
-                </a>
-                {/* X (Twitter) */}
-                <a href="#" className="text-black hover:text-white">
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
-                  </svg>
-                </a>
-                {/* Facebook */}
-                <a href="#" className="text-black hover:text-white">
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M9 8h-3v4h3v12h5v-12h3.642l.358-4h-4v-1.667c0-.955.192-1.333 1.115-1.333h2.885v-5h-3.808c-3.596 0-5.192 1.583-5.192 4.615v3.385z"/>
-                  </svg>
-                </a>
-              </div>
-            </div>
-            
-            {/* Marquee text */}
-            <div className="marquee-wrapper py-4 md:py-6 lg:py-8">
+          {/* Social icons bar - mobile only */}
+          <div className="fixed bottom-[80px] left-0 right-0 flex justify-center items-center py-3 z-47 md:hidden">
+            {/* Use the SocialButtons component instead of reimplementing */}
+            {mounted && <SocialButtons isMobile={true} />}
+          </div>
+          
+          {/* Bottom banner with marquee text */}
+          <div className="fixed bottom-0 left-0 right-0 bg-[#7000ff] overflow-hidden z-47" style={{ height: "80px", borderRadius: "30px 30px 0 0" }}>
+            <div className="marquee-wrapper py-3 md:py-4 lg:py-5">
               <div className="marquee-content">
-                <span className="mx-4 md:mx-6 text-black text-2xl md:text-3xl lg:text-4xl font-extrabold tracking-wider">LET'S START A COLLAB</span>
-                <span className="mx-4 md:mx-6 text-black text-2xl md:text-3xl lg:text-4xl">★</span>
-                <span className="mx-4 md:mx-6 text-black text-2xl md:text-3xl lg:text-4xl font-extrabold tracking-wider">LET'S START A COLLAB</span>
-                <span className="mx-4 md:mx-6 text-black text-2xl md:text-3xl lg:text-4xl">★</span>
-                <span className="mx-4 md:mx-6 text-black text-2xl md:text-3xl lg:text-4xl font-extrabold tracking-wider">LET'S START A COLLAB</span>
-                <span className="mx-4 md:mx-6 text-black text-2xl md:text-3xl lg:text-4xl">★</span>
+                <span className="mx-4 md:mx-6 text-black text-xl md:text-2xl lg:text-3xl font-extrabold tracking-wider">LET'S START A COLLAB</span>
+                <span className="mx-4 md:mx-6 text-black text-xl md:text-2xl lg:text-3xl">★</span>
+                <span className="mx-4 md:mx-6 text-black text-xl md:text-2xl lg:text-3xl font-extrabold tracking-wider">LET'S START A COLLAB</span>
+                <span className="mx-4 md:mx-6 text-black text-xl md:text-2xl lg:text-3xl">★</span>
               </div>
             </div>
           </div>
@@ -357,6 +334,8 @@ export default function Navbar3D({ initialMobile = false }) {
     </div>
   )
 }
+
+
 
 
 
