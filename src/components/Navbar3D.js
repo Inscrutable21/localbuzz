@@ -16,8 +16,7 @@ const Bee3D = dynamic(() =>
       return () => null; // Return empty component on error
     }), 
   { 
-    ssr: false,
-    loading: () => null
+    ssr: false
   }
 );
 
@@ -42,15 +41,12 @@ export default function Navbar3D({ initialMobile = false }) {
     // Prevent scrolling when menu is open
     if (menuOpen) {
       document.body.classList.add('menu-open')
-      // Delay showing the 3D model to ensure DOM is ready
-      const timer = setTimeout(() => {
-        setShowModel(!isMobile) // Only show model if not mobile
-      }, 300)
+      // Show the 3D model immediately if not mobile
+      setShowModel(!isMobile); // Only show model if not mobile
       
       return () => {
-        clearTimeout(timer)
-        setShowModel(false)
-      }
+        setShowModel(false);
+      };
     } else {
       document.body.classList.remove('menu-open')
       setShowModel(false)

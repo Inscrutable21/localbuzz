@@ -239,26 +239,7 @@ export default function Bee3D({ size = 300 }) {
       }}
       className="model-container"
     >
-      {loading && (
-        <div style={{ 
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          width: '100%',
-          height: '100%',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          color: '#c0ff00',
-          fontSize: '16px',
-          fontWeight: 'bold'
-        }}>
-          <div style={{ textAlign: 'center' }}>
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#c0ff00] mb-4 mx-auto"></div>
-            Loading 3D Model...
-          </div>
-        </div>
-      )}
+      {/* Loading indicator removed as per request */}
       
       {error && (
         <div style={{ 
