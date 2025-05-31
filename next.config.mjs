@@ -70,6 +70,17 @@ const nextConfig = {
     optimizeFonts: true,
     scrollRestoration: true,
     largePageDataBytes: 128 * 1000, // 128KB
+    outputFileTracingRoot: process.cwd(),
+    outputFileTracingExcludes: {
+      '*': [
+        'node_modules/@swc/core-linux-x64-gnu',
+        'node_modules/@swc/core-linux-x64-musl',
+        'node_modules/@esbuild/linux-x64',
+      ],
+    },
+    outputFileTracingIncludes: {
+      '/': ['public/**/*'],
+    },
   },
   // Ensure 3D model files are copied to the output directory
   async rewrites() {
@@ -102,6 +113,7 @@ const nextConfig = {
 };
 
 export default nextConfig;
+
 
 
 

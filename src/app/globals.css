@@ -571,12 +571,26 @@ body {
   }
 }
 
+/* Add these styles to ensure 3D models are visible */
+.model-container {
+  overflow: visible !important;
+  z-index: 45 !important;
+  transform-style: preserve-3d !important;
+  pointer-events: none;
+}
 
+/* Ensure canvas elements are visible */
+canvas {
+  display: block !important;
+  outline: none !important;
+  z-index: 45 !important;
+}
 
-
-
-
-
-
+/* Fix any potential clipping issues */
+[style*="overflow: visible"] {
+  overflow: visible !important;
+  z-index: 45 !important;
+  transform-style: preserve-3d !important;
+}
 
 

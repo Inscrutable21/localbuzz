@@ -10,6 +10,28 @@ export default function Bee3D({ size = 300 }) {
   const [error, setError] = useState(false)
   
   useEffect(() => {
+    // Debug info
+    console.log('Environment:', process.env.NODE_ENV);
+    console.log('Window location:', typeof window !== 'undefined' ? window.location.href : 'SSR');
+    console.log('Base URL:', typeof window !== 'undefined' ? window.location.origin : 'SSR');
+    
+    // Check if the file exists by trying to fetch it
+    if (typeof window !== 'undefined') {
+      const checkFile = async (url) => {
+        try {
+          const response = await fetch(url, { method: 'HEAD' });
+          console.log(`File check ${url}: ${response.status === 200 ? 'EXISTS' : 'NOT FOUND'}`);
+        } catch (err) {
+          console.error(`File check error for ${url}:`, err);
+        }
+      };
+      
+      checkFile(`${window.location.origin}/3dmodel/bumblebee.glb`);
+      checkFile('/3dmodel/bumblebee.glb');
+    }
+  }, []);
+  
+  useEffect(() => {
     if (!containerRef.current) return
     
     let model;
@@ -69,21 +91,36 @@ export default function Bee3D({ size = 300 }) {
     const tryNextPath = () => {
       if (loadAttempt >= possiblePaths.length) {
         console.error('Failed to load model from all possible paths');
-        // As a last resort, try to load a direct URL to the model
-        const directUrl = 'https://localbuzz.vercel.app/3dmodel/bumblebee.glb';
-        console.log(`Attempting to load model from direct URL: ${directUrl}`);
+        // Try these direct URLs as a last resort
+        const directUrls = [
+          `${window.location.origin}/3dmodel/bumblebee.glb`,
+          'https://localbuzz.vercel.app/3dmodel/bumblebee.glb',
+          '/3dmodel/bumblebee.glb'
+        ];
         
-        const loader = new GLTFLoader();
-        loader.load(
-          directUrl,
-          handleSuccessfulLoad,
-          handleProgress,
-          () => {
-            console.error('Failed to load model from direct URL');
+        console.log('Attempting emergency fallback URLs:', directUrls);
+        
+        // Try each URL in sequence
+        const tryDirectUrl = (index) => {
+          if (index >= directUrls.length) {
             setError(true);
             setLoading(false);
+            return;
           }
-        );
+          
+          const loader = new GLTFLoader();
+          loader.load(
+            directUrls[index],
+            handleSuccessfulLoad,
+            handleProgress,
+            () => {
+              console.error(`Failed to load from ${directUrls[index]}`);
+              tryDirectUrl(index + 1);
+            }
+          );
+        };
+        
+        tryDirectUrl(0);
         return;
       }
       
@@ -91,7 +128,6 @@ export default function Bee3D({ size = 300 }) {
       console.log(`Attempting to load model from: ${currentPath}`);
       
       const loader = new GLTFLoader();
-      
       loader.load(
         currentPath,
         handleSuccessfulLoad,
@@ -239,6 +275,11 @@ export default function Bee3D({ size = 300 }) {
     </div>
   );
 }
+
+
+
+
+
 
 
 

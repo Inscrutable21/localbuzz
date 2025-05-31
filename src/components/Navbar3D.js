@@ -301,7 +301,7 @@ export default function Navbar3D({ initialMobile = false }) {
                 width: '3000px',
                 height: '2500px',
                 zIndex: 45,
-                overflow: 'visible !important',
+                overflow: 'visible',
                 transformStyle: 'preserve-3d',
                 pointerEvents: 'none'
               }}
@@ -333,6 +333,7 @@ export default function Navbar3D({ initialMobile = false }) {
     </div>
   )
 }
+
 
 
 
