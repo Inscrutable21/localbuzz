@@ -8,20 +8,26 @@ export default function Bee3D({ size = 300 }) {
   const containerRef = useRef(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(false)
+  const [retryCount, setRetryCount] = useState(0)
   
   useEffect(() => {
     if (!containerRef.current) return
     
+    let model;
+    let mixer;
+    let renderer;
+    let animationId;
+    
     // Scene setup
     const scene = new THREE.Scene()
     
-    // Camera setup - adjust to match the image exactly
-    const camera = new THREE.PerspectiveCamera(25, 1, 0.1, 2000) // Narrower FOV for less distortion
-    camera.position.set(18, 2, -2) // Position camera to match the reference image
+    // Camera setup
+    const camera = new THREE.PerspectiveCamera(25, 1, 0.1, 2000)
+    camera.position.set(18, 2, -2)
     camera.lookAt(0, 0, 0)
     
     // Renderer setup
-    const renderer = new THREE.WebGLRenderer({ 
+    renderer = new THREE.WebGLRenderer({ 
       antialias: true,
       alpha: true,
       preserveDrawingBuffer: true
@@ -33,123 +39,94 @@ export default function Bee3D({ size = 300 }) {
     renderer.shadowMap.enabled = true
     renderer.shadowMap.type = THREE.PCFSoftShadowMap
     renderer.outputEncoding = THREE.sRGBEncoding
-    renderer.localClippingEnabled = false // Disable local clipping
     
     containerRef.current.appendChild(renderer.domElement)
     
-    // Lighting setup - match Sketchfab lighting
+    // Lighting
     const ambientLight = new THREE.AmbientLight(0xffffff, 0.8)
     scene.add(ambientLight)
     
-    const directionalLight = new THREE.DirectionalLight(0xffffff, 0.6)
-    directionalLight.position.set(5, 5, 5)
-    directionalLight.castShadow = true
+    const directionalLight = new THREE.DirectionalLight(0xffffff, 1.2)
+    directionalLight.position.set(5, 10, 5)
     scene.add(directionalLight)
     
-    const directionalLight2 = new THREE.DirectionalLight(0xffd700, 0.4)
-    directionalLight2.position.set(-5, 3, -5)
-    scene.add(directionalLight2)
-    
-    // Model loading
-    let model = null
-    let mixer = null
-    const loader = new GLTFLoader()
-    
-    loader.load(
-      '/3dmodel/bumblebee.glb',
-      (gltf) => {
-        model = gltf.scene
-        
-        // Scale and position the model - make it smaller
-        model.scale.set(3.0, 3.0, 3.0) // Reduced from 3.6 to make bee smaller
-        
-        // Set rotation to match the reference image
-        model.rotation.y = Math.PI * 0.15
-        model.rotation.x = Math.PI * 0.05
-        
-        // Center the model properly with adjusted positioning
-        const box = new THREE.Box3().setFromObject(model)
-        const center = box.getCenter(new THREE.Vector3())
-        model.position.x = -center.x + 1.2 // Adjusted for smaller size
-        model.position.y = -center.y - 0.4 // Adjusted for smaller size
-        model.position.z = -center.z - 0.8 // Adjusted for smaller size
-        
-        // Setup materials
-        model.traverse((child) => {
-          if (child.isMesh) {
-            child.castShadow = true
-            child.receiveShadow = true
-          }
-        })
-        
-        // IMPORTANT: Setup animations from the GLB file
-        if (gltf.animations && gltf.animations.length > 0) {
-          console.log(`Found ${gltf.animations.length} animations in the model`)
-          mixer = new THREE.AnimationMixer(model)
+    // Model loading with retry logic
+    const loadModel = () => {
+      const loader = new GLTFLoader()
+      
+      // Use absolute URL to ensure it works in all environments
+      const modelUrl = window.location.origin + '/3dmodel/bumblebee.glb';
+      
+      console.log('Loading model from:', modelUrl);
+      
+      loader.load(
+        modelUrl,
+        (gltf) => {
+          model = gltf.scene
           
-          // Play all animations
-          gltf.animations.forEach((clip, index) => {
-            console.log(`Playing animation ${index}: ${clip.name}`)
-            const action = mixer.clipAction(clip)
+          // Scale and position
+          model.scale.set(3.0, 3.0, 3.0)
+          model.rotation.y = Math.PI * 0.15
+          model.rotation.x = Math.PI * 0.05
+          
+          // Center properly
+          const box = new THREE.Box3().setFromObject(model)
+          const center = box.getCenter(new THREE.Vector3())
+          model.position.x = -center.x + 1.2
+          model.position.y = -center.y - 0.4
+          model.position.z = -center.z - 0.8
+          
+          scene.add(model)
+          
+          // Handle animations if present
+          if (gltf.animations && gltf.animations.length) {
+            mixer = new THREE.AnimationMixer(model)
+            const action = mixer.clipAction(gltf.animations[0])
             action.play()
-          })
-        } else {
-          console.warn('No animations found in the GLB file!')
+          }
+          
+          setLoading(false)
+        },
+        (progress) => {
+          // Optional: Track loading progress
+          console.log('Loading progress:', (progress.loaded / progress.total) * 100, '%');
+        },
+        (error) => {
+          console.error('Error loading model:', error)
+          
+          // Retry logic (up to 3 times)
+          if (retryCount < 3) {
+            console.log(`Retrying model load (${retryCount + 1}/3)...`);
+            setRetryCount(prev => prev + 1);
+            setTimeout(loadModel, 1000); // Wait 1 second before retry
+          } else {
+            setError(true)
+            setLoading(false)
+          }
         }
-        
-        scene.add(model)
-        setLoading(false)
-      },
-      (progress) => {
-        const percentComplete = (progress.loaded / progress.total * 100).toFixed(0)
-        console.log(`Loading: ${percentComplete}%`)
-      },
-      (error) => {
-        console.error('Error loading model:', error)
-        setLoading(false)
-        setError(true)
-      }
-    )
+      )
+    }
+    
+    loadModel()
     
     // Animation loop
     const clock = new THREE.Clock()
-    let animationId
     
-    function animate() {
+    const animate = () => {
       animationId = requestAnimationFrame(animate)
-      const deltaTime = clock.getDelta()
-      const elapsedTime = clock.getElapsedTime()
       
-      // Update the animation mixer - this plays the wing animations
       if (mixer) {
-        mixer.update(deltaTime)
+        mixer.update(clock.getDelta())
       }
       
-      // Only add hovering motion, NO ROTATION
       if (model) {
-        // Gentle hovering motion only
-        model.position.y = Math.sin(elapsedTime * 2) * 0.05
-        
-        // DO NOT ADD ANY ROTATION HERE
-        // model.rotation.y = ... // REMOVED
+        model.rotation.y += 0.002 // Slow rotation
       }
       
-      // Render the scene
       renderer.render(scene, camera)
     }
     
     animate()
-    
-    // Handle resize
-    const handleResize = () => {
-      if (!containerRef.current) return
-      
-      camera.aspect = 1
-      camera.updateProjectionMatrix()
-      renderer.setSize(size, size)
-    }
-    
-    window.addEventListener('resize', handleResize)
     
     // Cleanup
     return () => {
@@ -157,32 +134,29 @@ export default function Bee3D({ size = 300 }) {
         cancelAnimationFrame(animationId)
       }
       
-      if (containerRef.current && containerRef.current.contains(renderer.domElement)) {
-        containerRef.current.removeChild(renderer.domElement)
-      }
-      
-      window.removeEventListener('resize', handleResize)
-      
-      if (mixer) {
-        mixer.stopAllAction()
-      }
-      
-      scene.traverse((child) => {
-        if (child.geometry) {
-          child.geometry.dispose()
+      if (renderer) {
+        renderer.dispose()
+        if (containerRef.current && containerRef.current.contains(renderer.domElement)) {
+          containerRef.current.removeChild(renderer.domElement)
         }
-        if (child.material) {
-          if (Array.isArray(child.material)) {
-            child.material.forEach(material => material.dispose())
-          } else {
-            child.material.dispose()
+      }
+      
+      // Clean up Three.js resources
+      if (model) {
+        scene.remove(model)
+        model.traverse((object) => {
+          if (object.geometry) object.geometry.dispose()
+          if (object.material) {
+            if (Array.isArray(object.material)) {
+              object.material.forEach(material => material.dispose())
+            } else {
+              object.material.dispose()
+            }
           }
-        }
-      })
-      
-      renderer.dispose()
+        })
+      }
     }
-  }, [size])
+  }, [size, retryCount])
   
   return (
     <div 
@@ -240,6 +214,8 @@ export default function Bee3D({ size = 300 }) {
     </div>
   )
 }
+
+
 
 
 

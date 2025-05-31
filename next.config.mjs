@@ -24,6 +24,19 @@ const nextConfig = {
       'umd': 'umd',
     });
     
+    // Add support for GLB/GLTF files
+    config.module.rules.push({
+      test: /\.(glb|gltf)$/,
+      use: {
+        loader: 'file-loader',
+        options: {
+          publicPath: '/_next/static/media/',
+          outputPath: 'static/media/',
+          name: '[name].[hash].[ext]',
+        },
+      },
+    });
+    
     // Optimize bundle size
     config.optimization = {
       ...config.optimization,
@@ -33,16 +46,12 @@ const nextConfig = {
           vendor: {
             test: /[\\/]node_modules[\\/]/,
             name(module) {
-              // Get the name. E.g. node_modules/packageName/not/this/part.js
-              // or node_modules/packageName
               const packageNameMatch = module.context ? 
                 module.context.match(/[\\/]node_modules[\\/](.*?)([\\/]|$)/) : null;
               
-              // Safely extract the package name or use a default
               const packageName = packageNameMatch && packageNameMatch[1] ? 
                 packageNameMatch[1] : 'vendor';
               
-              // Return specific chunks for large packages
               if (packageName === 'three' || 
                   (typeof packageName === 'string' && packageName.includes('@react-three'))) {
                 return `3d-vendor`;
@@ -66,9 +75,19 @@ const nextConfig = {
     scrollRestoration: true,
     largePageDataBytes: 128 * 1000, // 128KB
   },
+  // Ensure 3D model files are copied to the output directory
+  async rewrites() {
+    return [
+      {
+        source: '/3dmodel/:path*',
+        destination: '/3dmodel/:path*',
+      },
+    ];
+  },
 };
 
 export default nextConfig;
+
 
 
 

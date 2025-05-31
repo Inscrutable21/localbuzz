@@ -43,7 +43,6 @@ export default function Navbar3D({ initialMobile = false }) {
     if (menuOpen) {
       document.body.classList.add('menu-open')
       // Delay showing the 3D model to ensure DOM is ready
-      // Only show model on desktop
       const timer = setTimeout(() => {
         setShowModel(!isMobile) // Only show model if not mobile
       }, 300)
@@ -334,6 +333,7 @@ export default function Navbar3D({ initialMobile = false }) {
     </div>
   )
 }
+
 
 
 

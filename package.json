@@ -9,7 +9,8 @@
     "lint": "next lint",
     "analyze": "ANALYZE=true next build",
     "build:prod": "next build && next-pwa",
-    "start:prod": "NODE_ENV=production node .next/standalone/server.js"
+    "start:prod": "NODE_ENV=production node .next/standalone/server.js",
+    "postbuild": "cp -r public .next/standalone/ && cp -r .next/static .next/standalone/.next/"
   },
   "dependencies": {
     "@react-three/drei": "^9.88.17",
@@ -29,6 +30,7 @@
     "typescript": "^5.3.3"
   }
 }
+
 
 
 
