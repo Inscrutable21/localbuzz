@@ -468,24 +468,42 @@ body {
   }
 }
 
-/* Mobile bee container styles */
-.mobile-bee-container {
-  position: fixed;
-  bottom: 360px; /* Match the position in the component */
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 40;
-  width: 400px; /* 100% bigger (doubled) */
-  height: 400px; /* 100% bigger (doubled) */
-  border-radius: 50%;
-  overflow: visible;
+/* Mobile menu specific styles */
+@media (max-width: 767px) {
+  /* Improve text readability against the bee background */
+  .wide-menu-font {
+    text-shadow: 0 0 10px rgba(0, 0, 0, 0.9), 0 0 20px rgba(0, 0, 0, 0.8);
+    letter-spacing: 0.08em;
+  }
+  
+  /* Remove any padding that might be causing layout issues */
+  body.menu-open {
+    padding-bottom: 100px;
+  }
+  
+  /* Ensure the bee background doesn't create scrolling issues */
+  .fixed.inset-0.bg-black\/90 {
+    height: 100vh;
+    overflow: hidden;
+  }
+  
+  /* Make the menu text more visible */
+  .text-white\/80, .text-white\/70 {
+    color: rgba(255, 255, 255, 0.95);
+  }
 }
 
-/* Ensure the mobile bee doesn't get clipped */
-.mobile-bee-container canvas {
-  border-radius: 50%;
-  overflow: hidden;
+/* Remove any mobile-bee-container styles that might be causing issues */
+.mobile-bee-container {
+  display: none !important;
 }
+
+/* Ensure z-index is high enough for mobile menu content */
+.z-45 {
+  z-index: 45 !important;
+}
+
+
 
 
 

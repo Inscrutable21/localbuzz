@@ -1,6 +1,96 @@
 'use client'
 
-export default function SocialButtons() {
+export default function SocialButtons({ isMobile }) {
+  // For mobile view, use a horizontal layout
+  if (isMobile) {
+    return (
+      <div className="flex space-x-6 mt-8 justify-center">
+        {/* Instagram Button */}
+        <div className="tooltip-container">
+          <span className="tooltip">Instagram</span>
+          <span className="text">
+            <div className="borde-back">
+              <div className="icon instagram-bg">
+                <svg 
+                  xmlns="http://www.w3.org/2000/svg" 
+                  width="23" 
+                  height="23" 
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                >
+                  <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073z"/>
+                  <path d="M12 6.865c-3.396 0-6.135 2.739-6.135 6.135s2.739 6.135 6.135 6.135 6.135-2.739 6.135-6.135-2.739-6.135-6.135-6.135zm0 10.125c-2.205 0-3.99-1.785-3.99-3.99s1.785-3.99 3.99-3.99 3.99 1.785 3.99 3.99-1.785 3.99-3.99 3.99z"/>
+                  <circle cx="18.406" cy="5.594" r="1.44"/>
+                </svg>
+              </div>
+            </div>
+          </span>
+        </div>
+
+        {/* Facebook Button */}
+        <div className="tooltip-container">
+          <span className="tooltip facebook-tooltip">Facebook</span>
+          <span className="text">
+            <div className="borde-back">
+              <div className="icon facebook-bg">
+                <svg 
+                  xmlns="http://www.w3.org/2000/svg" 
+                  width="23" 
+                  height="23" 
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                >
+                  <path d="M9 8h-3v4h3v12h5v-12h3.642l.358-4h-4v-1.667c0-.955.192-1.333 1.115-1.333h2.885v-5h-3.808c-3.596 0-5.192 1.583-5.192 4.615v3.385z"/>
+                </svg>
+              </div>
+            </div>
+          </span>
+        </div>
+
+        {/* X (Twitter) Button */}
+        <div className="tooltip-container">
+          <span className="tooltip twitter-tooltip">Twitter</span>
+          <span className="text">
+            <div className="borde-back">
+              <div className="icon twitter-bg">
+                <svg 
+                  xmlns="http://www.w3.org/2000/svg" 
+                  width="23" 
+                  height="23" 
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                >
+                  <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                </svg>
+              </div>
+            </div>
+          </span>
+        </div>
+
+        {/* Discord Button */}
+        <div className="tooltip-container">
+          <span className="tooltip discord-tooltip">Discord</span>
+          <span className="text">
+            <div className="borde-back">
+              <div className="icon discord-bg">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="23"
+                  height="23"
+                  viewBox="0 0 16 16"
+                  fill="currentColor"
+                >
+                  <path d="M13.545 2.907a13.227 13.227 0 0 0-3.257-1.011.05.05 0 0 0-.052.025c-.141.25-.297.577-.406.833a12.19 12.19 0 0 0-3.658 0 8.258 8.258 0 0 0-.412-.833.051.051 0 0 0-.052-.025c-1.125.194-2.22.534-3.257 1.011a.041.041 0 0 0-.021.018C.356 6.024-.213 9.047.066 12.032c.001.014.01.028.021.037a13.276 13.276 0 0 0 3.995 2.02.05.05 0 0 0 .056-.019c.308-.42.582-.863.818-1.329a.05.05 0 0 0-.01-.059.051.051 0 0 0-.018-.011 8.875 8.875 0 0 1-1.248-.595.05.05 0 0 1-.02-.066.051.051 0 0 1 .015-.019c.084-.063.168-.129.248-.195a.05.05 0 0 1 .051-.007c2.619 1.196 5.454 1.196 8.041 0a.052.052 0 0 1 .053.007c.08.066.164.132.248.195a.051.051 0 0 1-.004.085 8.254 8.254 0 0 1-1.249.594.05.05 0 0 0-.03.03.052.052 0 0 0 .003.041c.24.465.515.909.817 1.329a.05.05 0 0 0 .056.019 13.235 13.235 0 0 0 4.001-2.02.049.049 0 0 0 .021-.037c.334-3.451-.559-6.449-2.366-9.106a.034.034 0 0 0-.02-.019Zm-8.198 7.307c-.789 0-1.438-.724-1.438-1.612 0-.889.637-1.613 1.438-1.613.807 0 1.45.73 1.438 1.613 0 .888-.637 1.612-1.438 1.612Zm5.316 0c-.788 0-1.438-.724-1.438-1.612 0-.889.637-1.613 1.438-1.613.807 0 1.451.73 1.438 1.613 0 .888-.631 1.612-1.438 1.612Z"/>
+                </svg>
+              </div>
+            </div>
+          </span>
+        </div>
+      </div>
+    );
+  }
+  
+  // Original desktop layout
   return (
     <div className="absolute top-1/2 right-12 z-50 flex flex-col space-y-16 transform -translate-y-1/2">
       {/* Instagram Button */}
@@ -87,4 +177,5 @@ export default function SocialButtons() {
     </div>
   );
 }
+
 

@@ -168,8 +168,8 @@ export default function Navbar3D() {
       {/* Mobile Menu (fullscreen) */}
       {menuOpen && (
         <div className="fixed inset-0 bg-black z-40 flex flex-col md:flex-row overflow-hidden">
-          {/* Left side menu with close button and scrollbar - full width on mobile, 35% on larger screens */}
-          <div className="w-full md:w-[35%] p-6 md:p-12 flex flex-col relative overflow-y-auto custom-scrollbar">
+          {/* Left side menu content */}
+          <div className="w-full md:w-[35%] p-6 md:p-12 flex flex-col relative overflow-y-auto custom-scrollbar z-45">
             {/* Close button - positioned on extreme left edge */}
             <div className="absolute top-4 md:top-6 left-4 md:left-6 z-50">
               <button 
@@ -276,7 +276,7 @@ export default function Navbar3D() {
           
           {/* Right side content - hidden on mobile, 65% on larger screens */}
           <div className="hidden md:block md:w-[65%] relative">
-            {/* Use SocialButtons component */}
+            {/* Use SocialButtons component - ONLY ON DESKTOP */}
             {mounted && <SocialButtons />}
             
             {/* 3D Bee Model - desktop position */}
@@ -285,34 +285,33 @@ export default function Navbar3D() {
                 position: 'absolute',
                 left: '50%', 
                 top: '50%',
-                transform: 'translate(-50%, -40%)',
-                width: '450px',
-                height: '450px',
+                transform: 'translate(-60%, -40%)',
+                width: '825px',
+                height: '825px',
                 zIndex: 100,
                 overflow: 'visible'
               }}
               className="hidden md:block"
             >
-              {mounted && <Bee3D size={450} isMobile={false} />}
+              {mounted && <Bee3D size={825} isMobile={false} />}
             </div>
           </div>
           
-          {/* Mobile 3D Bee Model - positioned 200% higher from bottom and 100% bigger */}
+          {/* Mobile 3D Bee Model - increased size and repositioned further down */}
           <div 
             style={{ 
               position: 'fixed',
               left: '50%', 
-              bottom: '360px', /* 200% higher from the bottom */
+              top: '60%', // Position 60% down from the top (40% up from bottom)
               transform: 'translateX(-50%)',
-              width: '400px', /* 100% bigger than 200px (doubled) */
-              height: '400px', /* 100% bigger than 200px (doubled) */
+              width: '420px', // Keeping the 40% increased size
+              height: '420px', // Keeping the 40% increased size
               zIndex: 40,
-              overflow: 'visible',
-              borderRadius: '50%'
+              overflow: 'visible'
             }}
             className="block md:hidden"
           >
-            {mounted && showModel && <Bee3D size={400} isMobile={isMobile} style={{ borderRadius: '50%', border: '2px solid #c0ff00', overflow: 'hidden' }} />}
+            {mounted && showModel && <Bee3D size={420} isMobile={isMobile} />}
           </div>
           
           {/* Bottom banner - responsive sizing */}
@@ -333,6 +332,22 @@ export default function Navbar3D() {
     </div>
   )
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

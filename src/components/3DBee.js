@@ -4,7 +4,7 @@ import React, { useRef, useState, useEffect } from 'react'
 import * as THREE from 'three'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
 
-export default function Bee3D({ size = 300, isMobile = false }) {
+export default function Bee3D({ size = 300, isMobile = false, isBackground = false }) {
   const containerRef = useRef(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(false)
@@ -16,23 +16,23 @@ export default function Bee3D({ size = 300, isMobile = false }) {
     const currentContainer = containerRef.current
     
     // For mobile menu background, use a much larger size
-    const isMenuBackground = isMobile && size > 1000
-    const isFullScreen = isMenuBackground // Rename for clarity
-    const actualSize = isFullScreen ? window.innerWidth : size
+    const isMenuBackground = isBackground
+    const isFullScreen = isMenuBackground
+    const actualSize = isFullScreen ? Math.max(window.innerWidth, window.innerHeight) * 1.5 : size
     
     console.log('3DBee mounted:', { size, isMobile, isMenuBackground, isFullScreen, actualSize })
     
     // Scene setup
     const scene = new THREE.Scene()
     
-    // Camera setup - adjusted for full-screen view
+    // Camera setup - adjusted for background view
     const camera = new THREE.PerspectiveCamera(
-      isFullScreen ? 30 : 40, // Wider FOV for full-screen
+      isFullScreen ? 25 : 40, // Wider FOV for full-screen
       1,
       0.1,
       1000
     )
-    camera.position.set(isFullScreen ? 8 : 5, isFullScreen ? 1 : 0.5, isFullScreen ? 6 : 4)
+    camera.position.set(isFullScreen ? 10 : 5, isFullScreen ? 2 : 0.5, isFullScreen ? 8 : 4)
     camera.lookAt(0, 0, 0)
     
     // Renderer setup
@@ -75,11 +75,11 @@ export default function Bee3D({ size = 300, isMobile = false }) {
       (gltf) => {
         model = gltf.scene
         
-        // Scale and position the model - bigger for full-screen
+        // Scale and position the model - bigger for background
         model.scale.set(
-          isFullScreen ? 3 : 1.5,
-          isFullScreen ? 3 : 1.5,
-          isFullScreen ? 3 : 1.5
+          isBackground ? 4 : (isFullScreen ? 3 : 1.5),
+          isBackground ? 4 : (isFullScreen ? 3 : 1.5),
+          isBackground ? 4 : (isFullScreen ? 3 : 1.5)
         )
         
         // Set initial rotation to match reference image
@@ -182,7 +182,7 @@ export default function Bee3D({ size = 300, isMobile = false }) {
       
       renderer.dispose()
     }
-  }, [size, isMobile])
+  }, [size, isMobile, isBackground])
   
   return (
     <div 
@@ -236,6 +236,8 @@ export default function Bee3D({ size = 300, isMobile = false }) {
     </div>
   )
 }
+
+
 
 
 
