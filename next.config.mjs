@@ -61,10 +61,15 @@ const nextConfig = {
     // Disable optimizeCss to avoid critters dependency issues
     optimizeCss: false,
     optimizePackageImports: ['three', '@react-three/fiber', '@react-three/drei'],
+    // Add more aggressive optimizations
+    optimizeFonts: true,
+    scrollRestoration: true,
+    largePageDataBytes: 128 * 1000, // 128KB
   },
 };
 
 export default nextConfig;
+
 
 
 

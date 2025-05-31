@@ -65,6 +65,7 @@ body.menu-open {
 [style*="overflow: visible"] {
   overflow: visible !important;
   z-index: 100 !important;
+  transform-style: preserve-3d !important;
 }
 
 /* Ensure the mobile menu has proper z-index and overflow */
@@ -520,4 +521,52 @@ body {
 .block.md\:hidden[style*="z-index: 41"] {
   pointer-events: none;
 }
+
+/* Enhanced 3D model container styles */
+.model-container {
+  overflow: visible !important;
+  transform-style: preserve-3d !important;
+  backface-visibility: visible !important;
+  will-change: transform;
+}
+
+/* Ensure menu items appear above the 3D model */
+.menu-item {
+  position: relative;
+  z-index: 46;
+}
+
+/* Ensure the mobile menu has proper z-index and overflow */
+.fixed.inset-0.bg-black {
+  overflow: visible !important;
+  transform-style: preserve-3d !important;
+}
+
+/* Improve z-index layering */
+.z-40 { z-index: 40 !important; }
+.z-45 { z-index: 45 !important; }
+.z-46 { z-index: 46 !important; }
+.z-47 { z-index: 47 !important; }
+.z-50 { z-index: 50 !important; }
+
+/* Mobile social buttons positioning */
+@media (max-width: 767px) {
+  .mobile-social-buttons {
+    padding-bottom: 8px;
+    background-color: rgba(0, 0, 0, 0.5);
+    border-radius: 30px;
+    padding: 8px 16px;
+  }
+  
+  .mobile-social-icon .icon {
+    width: 45px;
+    height: 45px;
+  }
+}
+
+
+
+
+
+
 

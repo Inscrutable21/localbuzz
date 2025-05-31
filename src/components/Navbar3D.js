@@ -5,19 +5,27 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import dynamic from 'next/dynamic'
 import SocialButtons from './SocialButtons'
-// import CubeSocialButtons from './CubeSocialButtons'
 
-// Import the 3D bee component with dynamic loading (no SSR)
-const Bee3D = dynamic(() => import('./3DBee'), { 
-  ssr: false,
-  loading: () => null // Remove loading indicator
-})
+// Import the 3D bee component with dynamic loading and lazy loading
+// Use a more robust dynamic import with error handling
+const Bee3D = dynamic(() => 
+  import('./3DBee')
+    .then(mod => mod.default)
+    .catch(err => {
+      console.error("Failed to load 3DBee:", err);
+      return () => null; // Return empty component on error
+    }), 
+  { 
+    ssr: false,
+    loading: () => null
+  }
+);
 
-export default function Navbar3D() {
+export default function Navbar3D({ initialMobile = false }) {
   const [mounted, setMounted] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
   const [showModel, setShowModel] = useState(false)
-  const [isMobile, setIsMobile] = useState(false)
+  const [isMobile, setIsMobile] = useState(initialMobile)
 
   useEffect(() => {
     setMounted(true)
@@ -78,6 +86,18 @@ export default function Navbar3D() {
       setMenuOpen(true)
     }
   }
+
+  // Render 3D model with error boundary
+  const render3DModel = () => {
+    if (!mounted || !showModel) return null;
+    
+    try {
+      return <Bee3D size={700} />; // Adjusted for smaller bee
+    } catch (error) {
+      console.error("Error rendering 3D model:", error);
+      return null;
+    }
+  };
 
   return (
     <div className="w-full h-16 bg-black text-white fixed top-0 left-0 z-50">
@@ -158,25 +178,6 @@ export default function Navbar3D() {
       {/* Mobile Menu (fullscreen) */}
       {menuOpen && (
         <div className="fixed inset-0 bg-black z-40 flex flex-col md:flex-row overflow-hidden">
-          {/* Mobile 3D Bee Model - REMOVED FOR MOBILE */}
-          {/* Only render 3D model on desktop */}
-          <div 
-            style={{ 
-              position: 'fixed',
-              left: '50%', 
-              top: '50%',
-              transform: 'translate(-50%, -50%)',
-              width: '100vw',
-              height: '100vh',
-              zIndex: 41,
-              overflow: 'visible',
-              opacity: 0.6
-            }}
-            className="hidden" // Changed from "block md:hidden" to "hidden"
-          >
-            {mounted && showModel && !isMobile && <Bee3D size={Math.max(window.innerWidth, window.innerHeight) * 1.2} isMobile={false} isBackground={true} />}
-          </div>
-          
           {/* Left side menu content */}
           <div className="w-full md:w-[35%] p-6 md:p-12 flex flex-col relative overflow-y-auto custom-scrollbar z-45">
             {/* Close button - positioned on extreme left edge */}
@@ -193,14 +194,6 @@ export default function Navbar3D() {
             </div>
             
             <nav className="flex flex-col space-y-4 md:space-y-8 uppercase mt-8 md:mt-12 relative z-46">
-              {/* Menu items remain the same but with improved contrast for readability */}
-              {/* Add text-shadow to improve readability against the 3D background */}
-              <style jsx>{`
-                .menu-item {
-                  text-shadow: 0 0 10px rgba(0,0,0,0.8), 0 0 20px rgba(0,0,0,0.6);
-                }
-              `}</style>
-              
               {/* Menu items with enhanced visibility */}
               <Link 
                 href="/" 
@@ -281,13 +274,15 @@ export default function Navbar3D() {
                 </div>
                 <a 
                   href="mailto:localbuzzagency@gmail.com" 
-                  className="text-white/80 text-xs md:text-sm hover:text-white transition-colors flex items-center uppercase"
+                  className="text-white/80 text-xs md:text-sm hover:text-white transition-colors flex items-center uppercase mb-6"
                 >
                   <svg className="w-3 h-3 md:w-4 md:h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                   </svg>
                   LOCALBUZZAGENCY@GMAIL.COM
                 </a>
+                
+                {/* Removed duplicate social icons from here */}
               </div>
             </nav>
           </div>
@@ -303,28 +298,50 @@ export default function Navbar3D() {
                 position: 'absolute',
                 left: '50%', 
                 top: '50%',
-                transform: 'translate(-60%, -40%)',
-                width: '825px',
-                height: '825px',
-                zIndex: 100,
-                overflow: 'visible'
+                transform: 'translate(-17%, -40%)', 
+                width: '3000px',
+                height: '2500px',
+                zIndex: 45,
+                overflow: 'visible !important',
+                transformStyle: 'preserve-3d',
+                pointerEvents: 'none'
               }}
-              className="hidden md:block"
+              className="hidden md:block model-container"
             >
-              {mounted && <Bee3D size={825} isMobile={false} />}
+              {render3DModel()}
             </div>
           </div>
           
-          {/* Social buttons - positioned above the banner for mobile */}
-          <div 
-            className="fixed bottom-[104px] left-0 right-0 flex justify-center items-center py-4 z-47 md:hidden"
-          >
-            {mounted && <SocialButtons isMobile={true} />}
-          </div>
-          
-          {/* Bottom banner - responsive sizing */}
-          <div className="fixed bottom-0 left-0 right-0 bg-[#7000ff] py-4 md:py-6 lg:py-8 overflow-hidden z-47" style={{ borderRadius: "30px 30px 0 0" }}>
-            <div className="marquee-wrapper">
+          {/* Bottom banner with social icons and marquee */}
+          <div className="fixed bottom-0 left-0 right-0 bg-[#7000ff] overflow-hidden z-47" style={{ borderRadius: "30px 30px 0 0" }}>
+            {/* Social icons inside the banner */}
+            <div className="flex justify-center items-center py-3 md:hidden">
+              <div className="flex space-x-8">
+                {/* Instagram */}
+                <a href="#" className="text-black hover:text-white">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073z"/>
+                    <path d="M12 6.865c-3.396 0-6.135 2.739-6.135 6.135s2.739 6.135 6.135 6.135 6.135-2.739 6.135-6.135-2.739-6.135-6.135-6.135zm0 10.125c-2.205 0-3.99-1.785-3.99-3.99s1.785-3.99 3.99-3.99 3.99 1.785 3.99 3.99-1.785 3.99-3.99 3.99z"/>
+                    <circle cx="18.406" cy="5.594" r="1.44"/>
+                  </svg>
+                </a>
+                {/* X (Twitter) */}
+                <a href="#" className="text-black hover:text-white">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                  </svg>
+                </a>
+                {/* Facebook */}
+                <a href="#" className="text-black hover:text-white">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M9 8h-3v4h3v12h5v-12h3.642l.358-4h-4v-1.667c0-.955.192-1.333 1.115-1.333h2.885v-5h-3.808c-3.596 0-5.192 1.583-5.192 4.615v3.385z"/>
+                  </svg>
+                </a>
+              </div>
+            </div>
+            
+            {/* Marquee text */}
+            <div className="marquee-wrapper py-4 md:py-6 lg:py-8">
               <div className="marquee-content">
                 <span className="mx-4 md:mx-6 text-black text-2xl md:text-3xl lg:text-4xl font-extrabold tracking-wider">LET'S START A COLLAB</span>
                 <span className="mx-4 md:mx-6 text-black text-2xl md:text-3xl lg:text-4xl">★</span>
@@ -340,58 +357,6 @@ export default function Navbar3D() {
     </div>
   )
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

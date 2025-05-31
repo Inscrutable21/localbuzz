@@ -9,7 +9,7 @@ export default function SocialButtons({ isMobile }) {
         <div className="tooltip-container mobile-social-icon">
           <span className="text">
             <div className="borde-back">
-              <div className="icon instagram-bg">
+              <div className="icon instagram-bg" style={{ width: '45px', height: '45px' }}>
                 <svg 
                   xmlns="http://www.w3.org/2000/svg" 
                   width="20" 
@@ -173,6 +173,7 @@ export default function SocialButtons({ isMobile }) {
     </div>
   );
 }
+
 
 
 
