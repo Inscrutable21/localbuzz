@@ -24,16 +24,12 @@ const nextConfig = {
       'umd': 'umd',
     });
     
-    // Add support for GLB/GLTF files
+    // Add support for GLB/GLTF files with more explicit configuration
     config.module.rules.push({
       test: /\.(glb|gltf)$/,
-      use: {
-        loader: 'file-loader',
-        options: {
-          publicPath: '/_next/static/media/',
-          outputPath: 'static/media/',
-          name: '[name].[hash].[ext]',
-        },
+      type: 'asset/resource',
+      generator: {
+        filename: 'static/media/[name].[hash][ext]',
       },
     });
     
@@ -84,9 +80,15 @@ const nextConfig = {
       },
     ];
   },
+  // Add static asset handling
+  images: {
+    domains: ['localhost'],
+    unoptimized: true,
+  },
 };
 
 export default nextConfig;
+
 
 
 

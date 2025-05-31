@@ -8,7 +8,6 @@ export default function Bee3D({ size = 300 }) {
   const containerRef = useRef(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(false)
-  const [retryCount, setRetryCount] = useState(0)
   
   useEffect(() => {
     if (!containerRef.current) return
@@ -32,13 +31,14 @@ export default function Bee3D({ size = 300 }) {
       alpha: true,
       preserveDrawingBuffer: true
     })
-    
+
     renderer.setSize(size, size)
     renderer.setClearColor(0x000000, 0)
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
     renderer.shadowMap.enabled = true
     renderer.shadowMap.type = THREE.PCFSoftShadowMap
-    renderer.outputEncoding = THREE.sRGBEncoding
+    // Fix deprecated property
+    renderer.outputColorSpace = THREE.SRGBColorSpace
     
     containerRef.current.appendChild(renderer.domElement)
     
@@ -50,113 +50,135 @@ export default function Bee3D({ size = 300 }) {
     directionalLight.position.set(5, 10, 5)
     scene.add(directionalLight)
     
-    // Model loading with retry logic
-    const loadModel = () => {
-      const loader = new GLTFLoader()
+    // Try multiple paths to find the model
+    const possiblePaths = [
+      '/3dmodel/bumblebee.glb',
+      './3dmodel/bumblebee.glb',
+      '../3dmodel/bumblebee.glb',
+      '/public/3dmodel/bumblebee.glb',
+      '/_next/static/media/bumblebee.glb'
+    ];
+
+    // Add the current domain path as well
+    if (typeof window !== 'undefined') {
+      const baseUrl = window.location.origin;
+      possiblePaths.unshift(`${baseUrl}/3dmodel/bumblebee.glb`);
+    }
+
+    let loadAttempt = 0;
+
+    const tryNextPath = () => {
+      if (loadAttempt >= possiblePaths.length) {
+        console.error('Failed to load model from all possible paths');
+        // As a last resort, try to load a direct URL to the model
+        const directUrl = 'https://localbuzz.vercel.app/3dmodel/bumblebee.glb';
+        console.log(`Attempting to load model from direct URL: ${directUrl}`);
+        
+        const loader = new GLTFLoader();
+        loader.load(
+          directUrl,
+          handleSuccessfulLoad,
+          handleProgress,
+          () => {
+            console.error('Failed to load model from direct URL');
+            setError(true);
+            setLoading(false);
+          }
+        );
+        return;
+      }
       
-      // Use absolute URL to ensure it works in all environments
-      const modelUrl = window.location.origin + '/3dmodel/bumblebee.glb';
+      const currentPath = possiblePaths[loadAttempt];
+      console.log(`Attempting to load model from: ${currentPath}`);
       
-      console.log('Loading model from:', modelUrl);
+      const loader = new GLTFLoader();
       
       loader.load(
-        modelUrl,
-        (gltf) => {
-          model = gltf.scene
-          
-          // Scale and position
-          model.scale.set(3.0, 3.0, 3.0)
-          model.rotation.y = Math.PI * 0.15
-          model.rotation.x = Math.PI * 0.05
-          
-          // Center properly
-          const box = new THREE.Box3().setFromObject(model)
-          const center = box.getCenter(new THREE.Vector3())
-          model.position.x = -center.x + 1.2
-          model.position.y = -center.y - 0.4
-          model.position.z = -center.z - 0.8
-          
-          scene.add(model)
-          
-          // Handle animations if present
-          if (gltf.animations && gltf.animations.length) {
-            mixer = new THREE.AnimationMixer(model)
-            const action = mixer.clipAction(gltf.animations[0])
-            action.play()
-          }
-          
-          setLoading(false)
-        },
-        (progress) => {
-          // Optional: Track loading progress
-          console.log('Loading progress:', (progress.loaded / progress.total) * 100, '%');
-        },
-        (error) => {
-          console.error('Error loading model:', error)
-          
-          // Retry logic (up to 3 times)
-          if (retryCount < 3) {
-            console.log(`Retrying model load (${retryCount + 1}/3)...`);
-            setRetryCount(prev => prev + 1);
-            setTimeout(loadModel, 1000); // Wait 1 second before retry
-          } else {
-            setError(true)
-            setLoading(false)
-          }
-        }
-      )
-    }
-    
-    loadModel()
+        currentPath,
+        handleSuccessfulLoad,
+        handleProgress,
+        handleError
+      );
+    };
+
+    const handleSuccessfulLoad = (gltf) => {
+      console.log('Model loaded successfully!');
+      model = gltf.scene;
+      
+      // Scale and position
+      model.scale.set(3.0, 3.0, 3.0);
+      model.rotation.y = Math.PI * 0.15;
+      model.rotation.x = Math.PI * 0.05;
+      
+      // Center properly
+      const box = new THREE.Box3().setFromObject(model);
+      const center = box.getCenter(new THREE.Vector3());
+      model.position.x = -center.x + 1.2;
+      model.position.y = -center.y - 0.4;
+      model.position.z = -center.z - 0.8;
+      
+      scene.add(model);
+      
+      // Handle animations if present
+      if (gltf.animations && gltf.animations.length) {
+        mixer = new THREE.AnimationMixer(model);
+        const action = mixer.clipAction(gltf.animations[0]);
+        action.play();
+      }
+      
+      setLoading(false);
+    };
+
+    const handleProgress = (progress) => {
+      // Track loading progress
+      if (progress.total > 0) {
+        const percent = (progress.loaded / progress.total) * 100;
+        console.log(`Loading progress (${possiblePaths[loadAttempt]}):`, percent.toFixed(2), '%');
+      }
+    };
+
+    const handleError = (error) => {
+      console.warn(`Failed to load from ${possiblePaths[loadAttempt]}:`, error);
+      loadAttempt++;
+      tryNextPath();
+    };
+
+    // Start trying paths
+    tryNextPath();
     
     // Animation loop
-    const clock = new THREE.Clock()
+    const clock = new THREE.Clock();
     
     const animate = () => {
-      animationId = requestAnimationFrame(animate)
+      animationId = requestAnimationFrame(animate);
       
       if (mixer) {
-        mixer.update(clock.getDelta())
+        mixer.update(clock.getDelta());
       }
       
       if (model) {
-        model.rotation.y += 0.002 // Slow rotation
+        model.rotation.y += 0.002; // Slow rotation
       }
       
-      renderer.render(scene, camera)
-    }
+      renderer.render(scene, camera);
+    };
     
-    animate()
+    animate();
     
     // Cleanup
     return () => {
       if (animationId) {
-        cancelAnimationFrame(animationId)
+        cancelAnimationFrame(animationId);
       }
       
       if (renderer) {
-        renderer.dispose()
+        renderer.dispose();
         if (containerRef.current && containerRef.current.contains(renderer.domElement)) {
-          containerRef.current.removeChild(renderer.domElement)
+          containerRef.current.removeChild(renderer.domElement);
         }
       }
-      
-      // Clean up Three.js resources
-      if (model) {
-        scene.remove(model)
-        model.traverse((object) => {
-          if (object.geometry) object.geometry.dispose()
-          if (object.material) {
-            if (Array.isArray(object.material)) {
-              object.material.forEach(material => material.dispose())
-            } else {
-              object.material.dispose()
-            }
-          }
-        })
-      }
-    }
-  }, [size, retryCount])
+    };
+  }, [size]);
   
   return (
     <div 
@@ -165,10 +187,7 @@ export default function Bee3D({ size = 300 }) {
         width: size, 
         height: size,
         position: 'relative',
-        overflow: 'visible !important',
-        transformStyle: 'preserve-3d',
-        backfaceVisibility: 'visible',
-        willChange: 'transform'
+        overflow: 'visible !important'
       }}
       className="model-container"
     >
@@ -208,37 +227,12 @@ export default function Bee3D({ size = 300 }) {
           padding: '20px',
           textAlign: 'center'
         }}>
-          Failed to load 3D model. Please check if the file exists at /3dmodel/bumblebee.glb
+          Failed to load 3D model. Please check console for details.
         </div>
       )}
     </div>
-  )
+  );
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
