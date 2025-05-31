@@ -6,21 +6,22 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
 
 export default function Bee3D({ size = 300, isMobile = false, isBackground = false }) {
   const containerRef = useRef(null)
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(false) // Start with loading false
   const [error, setError] = useState(false)
   
   useEffect(() => {
+    // Skip rendering on mobile devices
+    if (isMobile) return;
+    
     if (!containerRef.current) return
     
     // Store ref value in a variable to use in cleanup
     const currentContainer = containerRef.current
     
-    // For mobile menu background, use a much larger size
+    // For menu background, use a much larger size
     const isMenuBackground = isBackground
     const isFullScreen = isMenuBackground
     const actualSize = isFullScreen ? Math.max(window.innerWidth, window.innerHeight) * 1.5 : size
-    
-    console.log('3DBee mounted:', { size, isMobile, isMenuBackground, isFullScreen, actualSize })
     
     // Scene setup
     const scene = new THREE.Scene()
@@ -35,35 +36,44 @@ export default function Bee3D({ size = 300, isMobile = false, isBackground = fal
     camera.position.set(isFullScreen ? 10 : 5, isFullScreen ? 2 : 0.5, isFullScreen ? 8 : 4)
     camera.lookAt(0, 0, 0)
     
-    // Renderer setup
+    // Renderer setup - optimize for performance
     const renderer = new THREE.WebGLRenderer({ 
-      antialias: !isMobile,
+      antialias: true,
       alpha: true,
       preserveDrawingBuffer: false,
-      powerPreference: 'low-power'
+      powerPreference: 'high-performance'
     })
     
     renderer.setSize(actualSize, actualSize)
     renderer.setClearColor(0x000000, 0)
-    renderer.setPixelRatio(isMobile ? 1 : Math.min(window.devicePixelRatio, 2))
-    renderer.shadowMap.enabled = !isMobile
-    renderer.shadowMap.type = THREE.PCFSoftShadowMap
+    // Limit pixel ratio for better performance
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+    // Use more efficient shadow map
+    renderer.shadowMap.enabled = !isBackground
+    renderer.shadowMap.type = THREE.PCFShadowMap
     renderer.outputEncoding = THREE.sRGBEncoding
     
     currentContainer.appendChild(renderer.domElement)
     
-    // Lighting setup - match Sketchfab lighting
+    // Simplified lighting setup for better performance
     const ambientLight = new THREE.AmbientLight(0xffffff, 0.8)
     scene.add(ambientLight)
     
+    // Use only one directional light with optimized settings
     const directionalLight = new THREE.DirectionalLight(0xffffff, 0.6)
     directionalLight.position.set(5, 5, 5)
-    directionalLight.castShadow = true
-    scene.add(directionalLight)
+    directionalLight.castShadow = !isBackground
     
-    const directionalLight2 = new THREE.DirectionalLight(0xffd700, 0.4)
-    directionalLight2.position.set(-5, 3, -5)
-    scene.add(directionalLight2)
+    // Optimize shadow map size
+    if (directionalLight.shadow) {
+      directionalLight.shadow.mapSize.width = 1024
+      directionalLight.shadow.mapSize.height = 1024
+      directionalLight.shadow.camera.near = 0.5
+      directionalLight.shadow.camera.far = 50
+      directionalLight.shadow.bias = -0.001
+    }
+    
+    scene.add(directionalLight)
     
     // Model loading
     let model = null
@@ -92,11 +102,22 @@ export default function Bee3D({ size = 300, isMobile = false, isBackground = fal
         const center = box.getCenter(new THREE.Vector3())
         model.position.sub(center)
         
-        // Setup materials
+        // Optimize materials
         model.traverse((child) => {
           if (child.isMesh) {
-            child.castShadow = true
-            child.receiveShadow = true
+            // Use standard material instead of physical for better performance
+            if (child.material) {
+              if (child.material.map) {
+                child.material.map.anisotropy = 4 // Lower anisotropy
+              }
+              // Disable unnecessary material features
+              child.material.envMapIntensity = 0.5
+              child.material.needsUpdate = true
+              
+              // Optimize shadows
+              child.castShadow = !isBackground
+              child.receiveShadow = !isBackground
+            }
           }
         })
         
@@ -105,21 +126,26 @@ export default function Bee3D({ size = 300, isMobile = false, isBackground = fal
           console.log(`Found ${gltf.animations.length} animations in the model`)
           mixer = new THREE.AnimationMixer(model)
           
-          // Play all animations
-          gltf.animations.forEach((clip, index) => {
-            console.log(`Playing animation ${index}: ${clip.name}`)
-            const action = mixer.clipAction(clip)
+          // Only play essential animations
+          const wingAnimation = gltf.animations.find(clip => 
+            clip.name.toLowerCase().includes('wing') || 
+            clip.name.toLowerCase().includes('fly')
+          )
+          
+          if (wingAnimation) {
+            const action = mixer.clipAction(wingAnimation)
             action.play()
-          })
+          } else if (gltf.animations.length > 0) {
+            // Fallback to first animation if no wing animation found
+            const action = mixer.clipAction(gltf.animations[0])
+            action.play()
+          }
         }
         
         scene.add(model)
         setLoading(false)
       },
-      (progress) => {
-        const percentComplete = (progress.loaded / progress.total * 100).toFixed(0)
-        console.log(`Loading: ${percentComplete}%`)
-      },
+      undefined,
       (error) => {
         console.error('Error loading model:', error)
         setLoading(false)
@@ -127,28 +153,36 @@ export default function Bee3D({ size = 300, isMobile = false, isBackground = fal
       }
     )
     
-    // Animation loop
+    // Animation loop with frame rate limiting
     const clock = new THREE.Clock()
     let animationId
+    let lastTime = 0
+    const targetFPS = 30 // Limit to 30 FPS for smoother performance
+    const interval = 1 / targetFPS
     
     function animate() {
       animationId = requestAnimationFrame(animate)
-      const deltaTime = clock.getDelta()
-      const elapsedTime = clock.getElapsedTime()
       
-      // Update the animation mixer - this plays the wing animations
-      if (mixer) {
-        mixer.update(deltaTime)
-      }
+      const currentTime = clock.getElapsedTime()
+      const deltaTime = currentTime - lastTime
       
-      // Only add hovering motion, NO ROTATION
-      if (model) {
+      // Only render if enough time has passed (frame rate limiting)
+      if (deltaTime > interval) {
+        // Update the animation mixer
+        if (mixer) {
+          mixer.update(deltaTime)
+        }
+        
         // Gentle hovering motion only
-        model.position.y = Math.sin(elapsedTime * 2) * 0.05
+        if (model) {
+          model.position.y = Math.sin(currentTime * 2) * 0.05
+        }
+        
+        // Render the scene
+        renderer.render(scene, camera)
+        
+        lastTime = currentTime - (deltaTime % interval)
       }
-      
-      // Render the scene
-      renderer.render(scene, camera)
     }
     
     animate()
@@ -167,14 +201,19 @@ export default function Bee3D({ size = 300, isMobile = false, isBackground = fal
         mixer.stopAllAction()
       }
       
+      // Dispose of all resources
       scene.traverse((child) => {
         if (child.geometry) {
           child.geometry.dispose()
         }
         if (child.material) {
           if (Array.isArray(child.material)) {
-            child.material.forEach(material => material.dispose())
+            child.material.forEach(material => {
+              if (material.map) material.map.dispose()
+              material.dispose()
+            })
           } else {
+            if (child.material.map) child.material.map.dispose()
             child.material.dispose()
           }
         }
@@ -183,6 +222,9 @@ export default function Bee3D({ size = 300, isMobile = false, isBackground = fal
       renderer.dispose()
     }
   }, [size, isMobile, isBackground])
+  
+  // If mobile, don't render anything
+  if (isMobile) return null;
   
   return (
     <div 
@@ -193,49 +235,12 @@ export default function Bee3D({ size = 300, isMobile = false, isBackground = fal
         position: 'relative',
         overflow: 'visible'
       }}
-    >
-      {loading && (
-        <div style={{ 
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          width: '100%',
-          height: '100%',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          color: '#c0ff00',
-          fontSize: '16px',
-          fontWeight: 'bold'
-        }}>
-          <div style={{ textAlign: 'center' }}>
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#c0ff00] mb-4 mx-auto"></div>
-            Loading 3D Model...
-          </div>
-        </div>
-      )}
-      
-      {error && (
-        <div style={{ 
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          width: '100%',
-          height: '100%',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          color: '#ff0000',
-          fontSize: '14px',
-          padding: '20px',
-          textAlign: 'center'
-        }}>
-          Failed to load 3D model. Please check if the file exists at /3dmodel/bumblebee.glb
-        </div>
-      )}
-    </div>
+    />
   )
 }
+
+
+
 
 
 

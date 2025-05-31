@@ -10,18 +10,7 @@ import SocialButtons from './SocialButtons'
 // Import the 3D bee component with dynamic loading (no SSR)
 const Bee3D = dynamic(() => import('./3DBee'), { 
   ssr: false,
-  loading: () => (
-    <div style={{ 
-      width: 300, 
-      height: 300, 
-      display: 'flex', 
-      alignItems: 'center', 
-      justifyContent: 'center',
-      color: '#c0ff00'
-    }}>
-      Loading...
-    </div>
-  )
+  loading: () => null // Remove loading indicator
 })
 
 export default function Navbar3D() {
@@ -46,8 +35,9 @@ export default function Navbar3D() {
     if (menuOpen) {
       document.body.classList.add('menu-open')
       // Delay showing the 3D model to ensure DOM is ready
+      // Only show model on desktop
       const timer = setTimeout(() => {
-        setShowModel(true)
+        setShowModel(!isMobile) // Only show model if not mobile
       }, 300)
       
       return () => {
@@ -63,7 +53,7 @@ export default function Navbar3D() {
     return () => {
       document.body.classList.remove('menu-open')
     }
-  }, [menuOpen])
+  }, [menuOpen, isMobile])
 
   useEffect(() => {
     // Simple mobile detection
@@ -168,7 +158,8 @@ export default function Navbar3D() {
       {/* Mobile Menu (fullscreen) */}
       {menuOpen && (
         <div className="fixed inset-0 bg-black z-40 flex flex-col md:flex-row overflow-hidden">
-          {/* Mobile 3D Bee Model - as background */}
+          {/* Mobile 3D Bee Model - REMOVED FOR MOBILE */}
+          {/* Only render 3D model on desktop */}
           <div 
             style={{ 
               position: 'fixed',
@@ -181,9 +172,9 @@ export default function Navbar3D() {
               overflow: 'visible',
               opacity: 0.6
             }}
-            className="block md:hidden"
+            className="hidden" // Changed from "block md:hidden" to "hidden"
           >
-            {mounted && showModel && <Bee3D size={Math.max(window.innerWidth, window.innerHeight) * 1.2} isMobile={isMobile} isBackground={true} />}
+            {mounted && showModel && !isMobile && <Bee3D size={Math.max(window.innerWidth, window.innerHeight) * 1.2} isMobile={false} isBackground={true} />}
           </div>
           
           {/* Left side menu content */}
@@ -349,6 +340,8 @@ export default function Navbar3D() {
     </div>
   )
 }
+
+
 
 
 
