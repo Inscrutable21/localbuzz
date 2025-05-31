@@ -34,6 +34,9 @@ export default function Bee3D({ size = 300 }) {
   useEffect(() => {
     if (!containerRef.current) return
     
+    // Capture the container reference to use in cleanup
+    const container = containerRef.current;
+    
     let model;
     let mixer;
     let renderer;
@@ -64,7 +67,7 @@ export default function Bee3D({ size = 300 }) {
     // Fix deprecated property
     renderer.outputColorSpace = THREE.SRGBColorSpace
     
-    containerRef.current.appendChild(renderer.domElement)
+    container.appendChild(renderer.domElement)
     
     // Lighting
     const ambientLight = new THREE.AmbientLight(0xffffff, 0.8)
@@ -144,8 +147,9 @@ export default function Bee3D({ size = 300 }) {
       
       // Scale and position - adjusted for production
       model.scale.set(1.5, 1.5, 1.5);
-      model.rotation.y = Math.PI * 0.15;
-      model.rotation.x = Math.PI * 0.05;
+      // Set rotation for right side view
+      model.rotation.y = Math.PI * 1.65; // 90 degrees to show right side
+      model.rotation.x = Math.PI * 0.2; // Keep level
       
       // Center properly
       const box = new THREE.Box3().setFromObject(model);
@@ -202,9 +206,7 @@ export default function Bee3D({ size = 300 }) {
         mixer.update(clock.getDelta());
       }
       
-      if (model) {
-        model.rotation.y += 0.002; // Slow rotation
-      }
+      // Removed rotation - model stays in fixed right side view position
       
       renderer.render(scene, camera);
     };
@@ -219,8 +221,8 @@ export default function Bee3D({ size = 300 }) {
       
       if (renderer) {
         renderer.dispose();
-        if (containerRef.current && containerRef.current.contains(renderer.domElement)) {
-          containerRef.current.removeChild(renderer.domElement);
+        if (container && container.contains(renderer.domElement)) {
+          container.removeChild(renderer.domElement);
         }
       }
     };

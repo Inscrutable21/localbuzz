@@ -297,7 +297,7 @@ export default function Navbar3D({ initialMobile = false }) {
                 position: 'absolute',
                 left: '50%', 
                 top: '50%',
-                transform: 'translate(-45%, -50%)', // Center properly
+                transform: 'translate(-45%, -55%)', // Center properly
                 width: '100%',
                 height: '100%',
                 zIndex: 45,
