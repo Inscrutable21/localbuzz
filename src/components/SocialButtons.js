@@ -88,7 +88,7 @@ export default function SocialButtons({ isMobile }) {
   
   // Original desktop layout
   return (
-    <div className="absolute top-1/2 right-12 z-50 flex flex-col space-y-16 transform -translate-y-1/2">
+    <div className="absolute top-1/2 right-18 z-50 flex flex-col space-y-16 transform -translate-y-1/2">
       {/* Instagram Button */}
       <div className="tooltip-container">
         <span className="tooltip">Instagram</span>

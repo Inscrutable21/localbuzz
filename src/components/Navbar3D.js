@@ -325,6 +325,19 @@ export default function Navbar3D({ initialMobile = false }) {
                 <span className="mx-4 md:mx-6 text-black text-xl md:text-2xl lg:text-3xl">★</span>
                 <span className="mx-4 md:mx-6 text-black text-xl md:text-2xl lg:text-3xl font-extrabold tracking-wider">LET'S START A COLLAB</span>
                 <span className="mx-4 md:mx-6 text-black text-xl md:text-2xl lg:text-3xl">★</span>
+                <span className="mx-4 md:mx-6 text-black text-xl md:text-2xl lg:text-3xl font-extrabold tracking-wider">LET'S START A COLLAB</span>
+                <span className="mx-4 md:mx-6 text-black text-xl md:text-2xl lg:text-3xl">★</span>
+                <span className="mx-4 md:mx-6 text-black text-xl md:text-2xl lg:text-3xl font-extrabold tracking-wider">LET'S START A COLLAB</span>
+                <span className="mx-4 md:mx-6 text-black text-xl md:text-2xl lg:text-3xl">★</span>
+                {/* Duplicated content for seamless loop */}
+                <span className="mx-4 md:mx-6 text-black text-xl md:text-2xl lg:text-3xl font-extrabold tracking-wider">LET'S START A COLLAB</span>
+                <span className="mx-4 md:mx-6 text-black text-xl md:text-2xl lg:text-3xl">★</span>
+                <span className="mx-4 md:mx-6 text-black text-xl md:text-2xl lg:text-3xl font-extrabold tracking-wider">LET'S START A COLLAB</span>
+                <span className="mx-4 md:mx-6 text-black text-xl md:text-2xl lg:text-3xl">★</span>
+                <span className="mx-4 md:mx-6 text-black text-xl md:text-2xl lg:text-3xl font-extrabold tracking-wider">LET'S START A COLLAB</span>
+                <span className="mx-4 md:mx-6 text-black text-xl md:text-2xl lg:text-3xl">★</span>
+                <span className="mx-4 md:mx-6 text-black text-xl md:text-2xl lg:text-3xl font-extrabold tracking-wider">LET'S START A COLLAB</span>
+                <span className="mx-4 md:mx-6 text-black text-xl md:text-2xl lg:text-3xl">★</span>
               </div>
             </div>
           </div>
