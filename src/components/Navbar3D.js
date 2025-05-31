@@ -92,7 +92,7 @@ export default function Navbar3D({ initialMobile = false }) {
     if (!mounted || !showModel) return null;
     
     try {
-      return <Bee3D size={700} />; // Adjusted for smaller bee
+      return <Bee3D size={isMobile ? 400 : 700} />; // Adjust size based on device
     } catch (error) {
       console.error("Error rendering 3D model:", error);
       return null;
@@ -334,6 +334,7 @@ export default function Navbar3D({ initialMobile = false }) {
     </div>
   )
 }
+
 
 
 
