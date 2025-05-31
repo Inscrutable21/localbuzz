@@ -23,4 +23,497 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+  padding-top: 4rem; /* Add padding to account for fixed navbar */
+  padding-bottom: 104px; /* Match banner height */
 }
+
+/* Navbar specific styles */
+.navbar-logo {
+  letter-spacing: 0.05em;
+}
+
+/* Hamburger menu animation */
+.hamburger-line {
+  transition: all 0.3s ease;
+  transform-origin: center;
+}
+
+/* 3D model specific styles */
+canvas {
+  display: block;
+  outline: none;
+}
+
+/* Prevent scrolling when menu is open */
+body.menu-open {
+  overflow: hidden;
+  padding-bottom: 360px; /* Increased for mobile to accommodate higher bee */
+}
+
+@media (min-width: 768px) {
+  body.menu-open {
+    padding-bottom: 100px; /* Medium screens */
+  }
+}
+
+@media (min-width: 1024px) {
+  body.menu-open {
+    padding-bottom: 130px; /* Large screens */
+  }
+}
+
+/* Ensure 3D model containers aren't clipped */
+[style*="overflow: visible"] {
+  overflow: visible !important;
+  z-index: 100 !important;
+}
+
+/* Ensure the mobile menu has proper z-index and overflow */
+.fixed.inset-0.bg-black {
+  overflow: visible !important;
+}
+
+/* Ensure the 3D model has proper z-index */
+.fixed[style*="z-index: 50"] {
+  z-index: 150 !important;
+}
+
+/* Menu font styling */
+.menu-font {
+  font-family: 'Arial', sans-serif;
+  letter-spacing: 0.15em;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+/* Add this new class for the menu items */
+.nav-menu-item {
+  font-size: 42px;
+  font-weight: 700; /* Reduced from 900 */
+  letter-spacing: 0.2em; /* Increased letter spacing for wider appearance */
+  text-transform: uppercase;
+  transition: color 0.3s ease;
+  font-stretch: expanded;
+}
+
+.nav-menu-item:hover {
+  color: #c0ff00;
+}
+
+/* Wide menu font styling - extreme width with lighter weight */
+@font-face {
+  font-family: 'Grtsk Giga';
+  src: url('/fonts/GrtskGiga-Bold.woff2') format('woff2'),
+       url('/fonts/GrtskGiga-Bold.woff') format('woff');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+.wide-menu-font {
+  font-family: 'Grtsk Giga', 'Arial Black', sans-serif;
+  letter-spacing: 0.05em;
+  font-weight: 500; /* Reduced from 700 */
+  text-transform: uppercase;
+  transform: scaleX(1.3); /* Slightly less wide on mobile */
+  transform-origin: left;
+  display: inline-block;
+}
+
+@media (min-width: 768px) {
+  .wide-menu-font {
+    transform: scaleX(1.5); /* Full width on larger screens */
+  }
+}
+
+/* Simple marquee banner */
+.collab-banner {
+  background: #6600ff;
+  height: 104px;
+  overflow: hidden;
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+}
+
+.marquee-wrapper {
+  width: 100%;
+  overflow: hidden;
+  height: 100%;
+}
+
+.marquee-content {
+  display: inline-flex;
+  white-space: nowrap;
+  animation: marquee-scroll 15s linear infinite;
+  align-items: center;
+  height: 100%;
+  padding: 0 10px;
+}
+
+@media (min-width: 768px) {
+  .marquee-content {
+    animation: marquee-scroll 20s linear infinite;
+    padding: 0 15px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .marquee-content {
+    animation: marquee-scroll 25s linear infinite;
+    padding: 0 20px;
+  }
+}
+
+.marquee-container {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+}
+
+.collab-text {
+  font-family: 'Arial Black', sans-serif;
+  font-size: 2.8rem;
+  font-weight: 900;
+  color: #000;
+  text-transform: uppercase;
+  display: inline-block;
+}
+
+.animate-marquee-slow {
+  display: inline-flex;
+  white-space: nowrap;
+  animation: marquee 30s linear infinite;
+  animation-delay: 0s; /* Ensure no delay */
+}
+
+@keyframes marquee {
+  0% {
+    transform: translateX(0%); /* Start from visible position */
+  }
+  100% {
+    transform: translateX(-100%);
+  }
+}
+
+body {
+  padding-bottom: 104px;
+}
+
+/* 3D Transform Utilities */
+.perspective-\[800px\] {
+  perspective: 800px !important;
+}
+
+.perspective-\[1000px\] {
+  perspective: 1000px !important;
+}
+
+.rotate-y-12 {
+  transform: rotateY(12deg) !important;
+}
+
+.transform-style-preserve-3d {
+  transform-style: preserve-3d !important;
+}
+
+/* Enhanced 3D Navbar Styles */
+.nav-3d-item {
+  position: relative;
+  backface-visibility: hidden;
+}
+
+.nav-3d-item:before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  transform: translateZ(-10px);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.nav-3d-item:hover:before {
+  opacity: 1;
+}
+
+/* Custom scrollbar for menu */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 2px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* Grtsk Giga font */
+@font-face {
+  font-family: 'Grtsk Giga';
+  src: url('/fonts/GrtskGiga-Bold.woff2') format('woff2'),
+       url('/fonts/GrtskGiga-Bold.woff') format('woff');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Grtsk Giga';
+  src: url('/fonts/GrtskGiga-Black.woff2') format('woff2'),
+       url('/fonts/GrtskGiga-Black.woff') format('woff');
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Fallback for Grtsk Giga */
+.grtsk-font {
+  font-family: 'Grtsk Giga', 'Arial Black', sans-serif;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+/* Circular Social Button Styles with Tooltip - Dark Mode (No Color) */
+.tooltip-container {
+  position: relative;
+  background-color: #222;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 17px;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  fill: #fff;
+  box-shadow: rgba(0, 0, 0, 0.3) 0px 4px 25px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.tooltip-container .borde-back {
+  width: 60px;
+  height: 60px;
+  background-color: #111;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  box-shadow: none;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.tooltip-container .icon {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  cursor: pointer;
+  color: #fff;
+  background-color: #222;
+}
+
+/* Remove platform-specific backgrounds */
+.instagram-bg, .facebook-bg, .twitter-bg, .discord-bg {
+  background-color: #222;
+}
+
+.tooltip {
+  position: absolute;
+  top: 0;
+  left: -45px;
+  transform: translateX(-32%);
+  width: 160px;
+  height: 52px;
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.6s;
+  border-radius: 50px;
+  background-color: #111;
+  background-image: linear-gradient(-90deg, #333 0%, #111 75%, #111 100%);
+  display: flex;
+  align-items: center;
+  justify-content: right;
+  padding-right: 16px;
+  color: #fff;
+  font-size: 18px;
+  font-weight: 600;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+/* Remove platform-specific tooltip gradients */
+.facebook-tooltip, .twitter-tooltip, .discord-tooltip {
+  background-image: linear-gradient(-90deg, #333 0%, #111 75%, #111 100%);
+}
+
+.tooltip::before {
+  position: absolute;
+  content: "";
+  height: 0.6em;
+  width: 0.6em;
+  right: -0.2em;
+  top: 50%;
+  transform: translateY(-50%) rotate(45deg);
+  background: #111;
+}
+
+.tooltip-container:hover .tooltip {
+  left: 100%;
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  z-index: -10;
+}
+
+.tooltip-container:hover {
+  transform: translateX(-50px);
+  transition: 0.5s linear;
+}
+
+/* Change glow effect to white */
+.tooltip-container:hover .icon {
+  box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
+}
+
+/* Enhanced marquee animation for the collab banner */
+@keyframes marquee {
+  0% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-marquee {
+  display: inline-flex;
+  white-space: nowrap;
+  animation: marquee 15s linear infinite;
+}
+
+/* Add a subtle glow effect to the text */
+.animate-marquee span {
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+  transition: all 0.3s ease;
+}
+
+.animate-marquee span:hover {
+  text-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
+  transform: scale(1.05);
+}
+
+/* Continuous marquee animation for the collab banner - updated for larger size and circular edges */
+.marquee-wrapper {
+  width: 100%;
+  overflow: hidden;
+  height: 100%; /* Ensure full height */
+}
+
+.marquee-content {
+  display: inline-flex;
+  white-space: nowrap;
+  animation: marquee-scroll 20s linear infinite;
+  align-items: center; /* Center vertically */
+  height: 100%; /* Ensure full height */
+  padding: 0 20px; /* Add some padding to prevent text from touching the edges */
+}
+
+@keyframes marquee-scroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+/* Make sure we have enough content to create a seamless loop */
+.marquee-content span {
+  display: inline-block;
+  text-shadow: 0 0 10px rgba(0, 0, 0, 0.2); /* Darker shadow for black text */
+  line-height: 1.2; /* Improved line height for larger text */
+}
+
+/* Add a subtle pulse animation to the stars */
+.marquee-content span:nth-child(even) {
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 0.7;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.7;
+  }
+}
+
+/* Mobile bee container styles */
+.mobile-bee-container {
+  position: fixed;
+  bottom: 360px; /* Match the position in the component */
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 40;
+  width: 400px; /* 100% bigger (doubled) */
+  height: 400px; /* 100% bigger (doubled) */
+  border-radius: 50%;
+  overflow: visible;
+}
+
+/* Ensure the mobile bee doesn't get clipped */
+.mobile-bee-container canvas {
+  border-radius: 50%;
+  overflow: hidden;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
