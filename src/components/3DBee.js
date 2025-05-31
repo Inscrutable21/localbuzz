@@ -12,9 +12,15 @@ export default function Bee3D({ size = 300, isMobile = false }) {
   useEffect(() => {
     if (!containerRef.current) return
     
-    // For mobile full-screen mode, use viewport dimensions
-    const isFullScreen = isMobile && size > 500
-    const actualSize = isFullScreen ? Math.max(window.innerWidth, window.innerHeight) : size
+    // Store ref value in a variable to use in cleanup
+    const currentContainer = containerRef.current
+    
+    // For mobile menu background, use a much larger size
+    const isMenuBackground = isMobile && size > 1000
+    const isFullScreen = isMenuBackground // Rename for clarity
+    const actualSize = isFullScreen ? window.innerWidth : size
+    
+    console.log('3DBee mounted:', { size, isMobile, isMenuBackground, isFullScreen, actualSize })
     
     // Scene setup
     const scene = new THREE.Scene()
@@ -44,7 +50,7 @@ export default function Bee3D({ size = 300, isMobile = false }) {
     renderer.shadowMap.type = THREE.PCFSoftShadowMap
     renderer.outputEncoding = THREE.sRGBEncoding
     
-    containerRef.current.appendChild(renderer.domElement)
+    currentContainer.appendChild(renderer.domElement)
     
     // Lighting setup - match Sketchfab lighting
     const ambientLight = new THREE.AmbientLight(0xffffff, 0.8)
@@ -77,7 +83,7 @@ export default function Bee3D({ size = 300, isMobile = false }) {
         )
         
         // Set initial rotation to match reference image
-        model.rotation.y = Math.PI * -0. // Adjusted to show more of the left side of face
+        model.rotation.y = Math.PI * -0.1 // Adjusted to show more of the left side of face
         model.rotation.x = Math.PI * 0.05 // Slight upward tilt to show face better
         model.rotation.z = Math.PI * 0.05 // Slight tilt
         
@@ -94,7 +100,7 @@ export default function Bee3D({ size = 300, isMobile = false }) {
           }
         })
         
-        // IMPORTANT: Setup animations from the GLB file
+        // Setup animations from the GLB file
         if (gltf.animations && gltf.animations.length > 0) {
           console.log(`Found ${gltf.animations.length} animations in the model`)
           mixer = new THREE.AnimationMixer(model)
@@ -105,8 +111,6 @@ export default function Bee3D({ size = 300, isMobile = false }) {
             const action = mixer.clipAction(clip)
             action.play()
           })
-        } else {
-          console.warn('No animations found in the GLB file!')
         }
         
         scene.add(model)
@@ -141,9 +145,6 @@ export default function Bee3D({ size = 300, isMobile = false }) {
       if (model) {
         // Gentle hovering motion only
         model.position.y = Math.sin(elapsedTime * 2) * 0.05
-        
-        // DO NOT ADD ANY ROTATION HERE
-        // model.rotation.y = ... // REMOVED
       }
       
       // Render the scene
@@ -152,28 +153,15 @@ export default function Bee3D({ size = 300, isMobile = false }) {
     
     animate()
     
-    // Handle resize
-    const handleResize = () => {
-      if (!containerRef.current) return
-      
-      camera.aspect = 1
-      camera.updateProjectionMatrix()
-      renderer.setSize(size, size)
-    }
-    
-    window.addEventListener('resize', handleResize)
-    
     // Cleanup
     return () => {
       if (animationId) {
         cancelAnimationFrame(animationId)
       }
       
-      if (containerRef.current && containerRef.current.contains(renderer.domElement)) {
-        containerRef.current.removeChild(renderer.domElement)
+      if (currentContainer && currentContainer.contains(renderer.domElement)) {
+        currentContainer.removeChild(renderer.domElement)
       }
-      
-      window.removeEventListener('resize', handleResize)
       
       if (mixer) {
         mixer.stopAllAction()
@@ -248,6 +236,9 @@ export default function Bee3D({ size = 300, isMobile = false }) {
     </div>
   )
 }
+
+
+
 
 
 

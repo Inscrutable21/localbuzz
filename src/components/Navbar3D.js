@@ -277,24 +277,23 @@ export default function Navbar3D() {
           {/* Right side content - hidden on mobile, 65% on larger screens */}
           <div className="hidden md:block md:w-[65%] relative">
             {/* Use SocialButtons component */}
-            {mounted && showModel && <SocialButtons />}
+            {mounted && <SocialButtons />}
             
             {/* 3D Bee Model - desktop position */}
             <div 
               style={{ 
                 position: 'absolute',
                 left: '50%', 
-                bottom: '0',
-                transform: 'translate(-90%, -210%)',
+                top: '50%',
+                transform: 'translate(-50%, -40%)',
                 width: '450px',
                 height: '450px',
                 zIndex: 100,
-                overflow: 'visible',
-                borderRadius: '50%'
+                overflow: 'visible'
               }}
-              className="hidden lg:block"
+              className="hidden md:block"
             >
-              {mounted && showModel && <Bee3D size={720} isMobile={isMobile} style={{ borderRadius: '50%', border: '2px solid #c0ff00', overflow: 'hidden' }} />}
+              {mounted && <Bee3D size={450} isMobile={false} />}
             </div>
           </div>
           
@@ -334,6 +333,10 @@ export default function Navbar3D() {
     </div>
   )
 }
+
+
+
+
 
 
 
