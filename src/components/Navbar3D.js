@@ -297,9 +297,9 @@ export default function Navbar3D({ initialMobile = false }) {
                 position: 'absolute',
                 left: '50%', 
                 top: '50%',
-                transform: 'translate(-17%, -40%)', 
-                width: '3000px',
-                height: '2500px',
+                transform: 'translate(-50%, -50%)', // Center properly
+                width: '100%',
+                height: '100%',
                 zIndex: 45,
                 overflow: 'visible',
                 transformStyle: 'preserve-3d',
@@ -333,6 +333,7 @@ export default function Navbar3D({ initialMobile = false }) {
     </div>
   )
 }
+
 
 
 

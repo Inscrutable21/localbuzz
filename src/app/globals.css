@@ -577,13 +577,18 @@ body {
   z-index: 45 !important;
   transform-style: preserve-3d !important;
   pointer-events: none;
+  position: relative !important;
 }
 
-/* Ensure canvas elements are visible */
+/* Ensure canvas is properly positioned */
 canvas {
   display: block !important;
   outline: none !important;
-  z-index: 45 !important;
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
 }
 
 /* Fix any potential clipping issues */
@@ -592,5 +597,6 @@ canvas {
   z-index: 45 !important;
   transform-style: preserve-3d !important;
 }
+
 
 

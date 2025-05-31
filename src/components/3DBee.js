@@ -43,9 +43,11 @@ export default function Bee3D({ size = 300 }) {
     const scene = new THREE.Scene()
     
     // Camera setup
-    const camera = new THREE.PerspectiveCamera(25, 1, 0.1, 2000)
-    camera.position.set(18, 2, -2)
-    camera.lookAt(0, 0, 0)
+    const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 1000);
+    camera.position.set(0, 0, 5);
+
+    // Adjust scene position
+    scene.position.y = 0; // Reset any vertical offset
     
     // Renderer setup
     renderer = new THREE.WebGLRenderer({ 
@@ -140,7 +142,7 @@ export default function Bee3D({ size = 300 }) {
       console.log('Model loaded successfully!');
       model = gltf.scene;
       
-      // Scale and position
+      // Scale and position - adjusted for production
       model.scale.set(3.0, 3.0, 3.0);
       model.rotation.y = Math.PI * 0.15;
       model.rotation.x = Math.PI * 0.05;
@@ -148,9 +150,11 @@ export default function Bee3D({ size = 300 }) {
       // Center properly
       const box = new THREE.Box3().setFromObject(model);
       const center = box.getCenter(new THREE.Vector3());
-      model.position.x = -center.x + 1.2;
-      model.position.y = -center.y - 0.4;
-      model.position.z = -center.z - 0.8;
+      
+      // Adjust position to be more centered
+      model.position.x = -center.x;
+      model.position.y = -center.y - 0.5; // Move down slightly
+      model.position.z = -center.z;
       
       scene.add(model);
       
@@ -275,6 +279,8 @@ export default function Bee3D({ size = 300 }) {
     </div>
   );
 }
+
+
 
 
 
