@@ -503,35 +503,21 @@ body {
   z-index: 45 !important;
 }
 
+/* Improve text readability against 3D background */
+.menu-open .nav-menu-item {
+  text-shadow: 0 0 10px rgba(0,0,0,0.9), 0 0 20px rgba(0,0,0,0.8);
+  position: relative;
+  z-index: 46;
+}
 
+/* Ensure proper z-index layering */
+.z-41 { z-index: 41 !important; }
+.z-45 { z-index: 45 !important; }
+.z-46 { z-index: 46 !important; }
+.z-47 { z-index: 47 !important; }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+/* Ensure the 3D model container doesn't interfere with menu interaction */
+.block.md\:hidden[style*="z-index: 41"] {
+  pointer-events: none;
+}
 

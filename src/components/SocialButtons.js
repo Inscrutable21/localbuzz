@@ -1,20 +1,19 @@
 'use client'
 
 export default function SocialButtons({ isMobile }) {
-  // For mobile view, use a horizontal layout
+  // For mobile view, use a more compact horizontal layout
   if (isMobile) {
     return (
-      <div className="flex space-x-6 mt-8 justify-center">
+      <div className="flex space-x-6 justify-center mobile-social-buttons">
         {/* Instagram Button */}
-        <div className="tooltip-container">
-          <span className="tooltip">Instagram</span>
+        <div className="tooltip-container mobile-social-icon">
           <span className="text">
             <div className="borde-back">
               <div className="icon instagram-bg">
                 <svg 
                   xmlns="http://www.w3.org/2000/svg" 
-                  width="23" 
-                  height="23" 
+                  width="20" 
+                  height="20" 
                   viewBox="0 0 24 24"
                   fill="currentColor"
                 >
@@ -28,15 +27,14 @@ export default function SocialButtons({ isMobile }) {
         </div>
 
         {/* Facebook Button */}
-        <div className="tooltip-container">
-          <span className="tooltip facebook-tooltip">Facebook</span>
+        <div className="tooltip-container mobile-social-icon">
           <span className="text">
             <div className="borde-back">
               <div className="icon facebook-bg">
                 <svg 
                   xmlns="http://www.w3.org/2000/svg" 
-                  width="23" 
-                  height="23" 
+                  width="20" 
+                  height="20" 
                   viewBox="0 0 24 24"
                   fill="currentColor"
                 >
@@ -48,15 +46,14 @@ export default function SocialButtons({ isMobile }) {
         </div>
 
         {/* X (Twitter) Button */}
-        <div className="tooltip-container">
-          <span className="tooltip twitter-tooltip">Twitter</span>
+        <div className="tooltip-container mobile-social-icon">
           <span className="text">
             <div className="borde-back">
               <div className="icon twitter-bg">
                 <svg 
                   xmlns="http://www.w3.org/2000/svg" 
-                  width="23" 
-                  height="23" 
+                  width="20" 
+                  height="20" 
                   viewBox="0 0 24 24"
                   fill="currentColor"
                 >
@@ -68,15 +65,14 @@ export default function SocialButtons({ isMobile }) {
         </div>
 
         {/* Discord Button */}
-        <div className="tooltip-container">
-          <span className="tooltip discord-tooltip">Discord</span>
+        <div className="tooltip-container mobile-social-icon">
           <span className="text">
             <div className="borde-back">
               <div className="icon discord-bg">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  width="23"
-                  height="23"
+                  width="20"
+                  height="20"
                   viewBox="0 0 16 16"
                   fill="currentColor"
                 >
@@ -177,5 +173,6 @@ export default function SocialButtons({ isMobile }) {
     </div>
   );
 }
+
 
 

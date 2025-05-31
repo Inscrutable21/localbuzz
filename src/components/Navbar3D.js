@@ -168,6 +168,24 @@ export default function Navbar3D() {
       {/* Mobile Menu (fullscreen) */}
       {menuOpen && (
         <div className="fixed inset-0 bg-black z-40 flex flex-col md:flex-row overflow-hidden">
+          {/* Mobile 3D Bee Model - as background */}
+          <div 
+            style={{ 
+              position: 'fixed',
+              left: '50%', 
+              top: '50%',
+              transform: 'translate(-50%, -50%)',
+              width: '100vw',
+              height: '100vh',
+              zIndex: 41,
+              overflow: 'visible',
+              opacity: 0.6
+            }}
+            className="block md:hidden"
+          >
+            {mounted && showModel && <Bee3D size={Math.max(window.innerWidth, window.innerHeight) * 1.2} isMobile={isMobile} isBackground={true} />}
+          </div>
+          
           {/* Left side menu content */}
           <div className="w-full md:w-[35%] p-6 md:p-12 flex flex-col relative overflow-y-auto custom-scrollbar z-45">
             {/* Close button - positioned on extreme left edge */}
@@ -183,10 +201,19 @@ export default function Navbar3D() {
               </button>
             </div>
             
-            <nav className="flex flex-col space-y-4 md:space-y-8 uppercase mt-8 md:mt-12">
+            <nav className="flex flex-col space-y-4 md:space-y-8 uppercase mt-8 md:mt-12 relative z-46">
+              {/* Menu items remain the same but with improved contrast for readability */}
+              {/* Add text-shadow to improve readability against the 3D background */}
+              <style jsx>{`
+                .menu-item {
+                  text-shadow: 0 0 10px rgba(0,0,0,0.8), 0 0 20px rgba(0,0,0,0.6);
+                }
+              `}</style>
+              
+              {/* Menu items with enhanced visibility */}
               <Link 
                 href="/" 
-                className="wide-menu-font hover:text-[#c0ff00] transition-colors text-[20px] sm:text-[24px] md:text-[27px]"
+                className="wide-menu-font hover:text-[#c0ff00] transition-colors text-[20px] sm:text-[24px] md:text-[27px] menu-item"
                 style={{ transform: 'scaleX(1.5)', transformOrigin: 'left' }}
                 onClick={toggleMenu}
               >
@@ -194,7 +221,7 @@ export default function Navbar3D() {
               </Link>
               <Link 
                 href="/about" 
-                className="wide-menu-font hover:text-[#c0ff00] transition-colors text-[20px] sm:text-[24px] md:text-[27px]"
+                className="wide-menu-font hover:text-[#c0ff00] transition-colors text-[20px] sm:text-[24px] md:text-[27px] menu-item"
                 style={{ transform: 'scaleX(1.5)', transformOrigin: 'left' }}
                 onClick={toggleMenu}
               >
@@ -202,7 +229,7 @@ export default function Navbar3D() {
               </Link>
               <Link 
                 href="/portfolio" 
-                className="wide-menu-font hover:text-[#c0ff00] transition-colors text-[20px] sm:text-[24px] md:text-[27px]"
+                className="wide-menu-font hover:text-[#c0ff00] transition-colors text-[20px] sm:text-[24px] md:text-[27px] menu-item"
                 style={{ transform: 'scaleX(1.5)', transformOrigin: 'left' }}
                 onClick={toggleMenu}
               >
@@ -210,7 +237,7 @@ export default function Navbar3D() {
               </Link>
               <Link 
                 href="/brand-quiz" 
-                className="wide-menu-font hover:text-[#c0ff00] transition-colors text-[20px] sm:text-[24px] md:text-[27px]"
+                className="wide-menu-font hover:text-[#c0ff00] transition-colors text-[20px] sm:text-[24px] md:text-[27px] menu-item"
                 style={{ transform: 'scaleX(1.5)', transformOrigin: 'left' }}
                 onClick={toggleMenu}
               >
@@ -218,7 +245,7 @@ export default function Navbar3D() {
               </Link>
               <Link 
                 href="/blog" 
-                className="wide-menu-font hover:text-[#c0ff00] transition-colors text-[20px] sm:text-[24px] md:text-[27px]"
+                className="wide-menu-font hover:text-[#c0ff00] transition-colors text-[20px] sm:text-[24px] md:text-[27px] menu-item"
                 style={{ transform: 'scaleX(1.5)', transformOrigin: 'left' }}
                 onClick={toggleMenu}
               >
@@ -230,7 +257,7 @@ export default function Navbar3D() {
               <div className="flex items-center justify-between group">
                 <Link 
                   href="/services" 
-                  className="wide-menu-font hover:text-[#c0ff00] transition-colors text-[20px] sm:text-[24px] md:text-[27px]"
+                  className="wide-menu-font hover:text-[#c0ff00] transition-colors text-[20px] sm:text-[24px] md:text-[27px] menu-item"
                   style={{ transform: 'scaleX(1.5)', transformOrigin: 'left' }}
                   onClick={toggleMenu}
                 >
@@ -244,7 +271,7 @@ export default function Navbar3D() {
               <div className="flex items-center justify-between group">
                 <Link 
                   href="/industries" 
-                  className="wide-menu-font hover:text-[#c0ff00] transition-colors text-[18px] sm:text-[20px] md:text-[24px]"
+                  className="wide-menu-font hover:text-[#c0ff00] transition-colors text-[18px] sm:text-[20px] md:text-[24px] menu-item"
                   style={{ transform: 'scaleX(1.5)', transformOrigin: 'left' }}
                   onClick={toggleMenu}
                 >
@@ -256,7 +283,7 @@ export default function Navbar3D() {
               </div>
               
               {/* Contact information at bottom */}
-              <div className="mt-auto pt-8 md:pt-16">
+              <div className="mt-auto pt-8 md:pt-16 relative z-46">
                 <div className="flex items-center mb-2 md:mb-4">
                   <span className="mr-2">🇮🇳</span>
                   <span className="text-white/80 text-xs md:text-sm">MADE IN INDIA</span>
@@ -277,7 +304,7 @@ export default function Navbar3D() {
           {/* Right side content - hidden on mobile, 65% on larger screens */}
           <div className="hidden md:block md:w-[65%] relative">
             {/* Use SocialButtons component - ONLY ON DESKTOP */}
-            {mounted && <SocialButtons />}
+            {mounted && <SocialButtons isMobile={false} />}
             
             {/* 3D Bee Model - desktop position */}
             <div 
@@ -297,25 +324,15 @@ export default function Navbar3D() {
             </div>
           </div>
           
-          {/* Mobile 3D Bee Model - increased size and repositioned further down */}
+          {/* Social buttons - positioned above the banner for mobile */}
           <div 
-            style={{ 
-              position: 'fixed',
-              left: '50%', 
-              top: '60%', // Position 60% down from the top (40% up from bottom)
-              transform: 'translateX(-50%)',
-              width: '420px', // Keeping the 40% increased size
-              height: '420px', // Keeping the 40% increased size
-              zIndex: 40,
-              overflow: 'visible'
-            }}
-            className="block md:hidden"
+            className="fixed bottom-[104px] left-0 right-0 flex justify-center items-center py-4 z-47 md:hidden"
           >
-            {mounted && showModel && <Bee3D size={420} isMobile={isMobile} />}
+            {mounted && <SocialButtons isMobile={true} />}
           </div>
           
           {/* Bottom banner - responsive sizing */}
-          <div className="fixed bottom-0 left-0 right-0 bg-[#7000ff] py-4 md:py-6 lg:py-8 overflow-hidden z-30" style={{ borderRadius: "30px 30px 0 0" }}>
+          <div className="fixed bottom-0 left-0 right-0 bg-[#7000ff] py-4 md:py-6 lg:py-8 overflow-hidden z-47" style={{ borderRadius: "30px 30px 0 0" }}>
             <div className="marquee-wrapper">
               <div className="marquee-content">
                 <span className="mx-4 md:mx-6 text-black text-2xl md:text-3xl lg:text-4xl font-extrabold tracking-wider">LET'S START A COLLAB</span>
@@ -332,6 +349,11 @@ export default function Navbar3D() {
     </div>
   )
 }
+
+
+
+
+
 
 
 
