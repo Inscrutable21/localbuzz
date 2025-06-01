@@ -4,7 +4,7 @@ import React, { useRef, useState, useEffect } from 'react'
 import * as THREE from 'three'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
 
-export default function Bee3D({ size = 300 }) {
+export default function Bee3D({ size = 300, flyingPattern = 'hover' }) {
   const containerRef = useRef(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(false)
@@ -41,6 +41,8 @@ export default function Bee3D({ size = 300 }) {
     let mixer;
     let renderer;
     let animationId;
+    let center = new THREE.Vector3(); // Store the center position
+    let trailParticles = []; // Store trail particles
     
     // Scene setup
     const scene = new THREE.Scene()
@@ -153,7 +155,7 @@ export default function Bee3D({ size = 300 }) {
       
       // Center properly
       const box = new THREE.Box3().setFromObject(model);
-      const center = box.getCenter(new THREE.Vector3());
+      center = box.getCenter(new THREE.Vector3());
       
       // Adjust position to be more centered
       model.position.x = -center.x;
@@ -198,15 +200,125 @@ export default function Bee3D({ size = 300 }) {
     
     // Animation loop
     const clock = new THREE.Clock();
+    let time = 0;
     
     const animate = () => {
       animationId = requestAnimationFrame(animate);
       
+      const delta = clock.getDelta();
+      time += delta;
+      
       if (mixer) {
-        mixer.update(clock.getDelta());
+        mixer.update(delta);
       }
       
-      // Removed rotation - model stays in fixed right side view position
+      // Flying animations for the bee
+      if (model) {
+        if (flyingPattern === 'figure8') {
+          // Figure-8 flying pattern
+          const radius = 1.5;
+          const speed = 0.8;
+          model.position.x = -center.x + Math.sin(time * speed) * radius;
+          model.position.y = -center.y - 0.5 + Math.sin(time * speed * 2) * 0.5;
+          model.position.z = -center.z + Math.cos(time * speed) * radius * 0.5;
+          
+          // Rotate to face movement direction
+          model.rotation.y = Math.PI * 1.65 + Math.atan2(Math.cos(time * speed), Math.sin(time * speed));
+          model.rotation.x = Math.PI * 0.2 + Math.sin(time * speed * 2) * 0.2;
+          model.rotation.z = Math.sin(time * speed) * 0.3;
+        } else if (flyingPattern === 'circle') {
+          // Circular flying pattern
+          const radius = 1.2;
+          const speed = 1.2;
+          model.position.x = -center.x + Math.sin(time * speed) * radius;
+          model.position.y = -center.y - 0.5 + Math.sin(time * speed * 3) * 0.3;
+          model.position.z = -center.z + Math.cos(time * speed) * radius;
+          
+          // Face the direction of movement
+          model.rotation.y = Math.PI * 1.65 + time * speed;
+          model.rotation.x = Math.PI * 0.2 + Math.sin(time * speed * 2) * 0.15;
+          model.rotation.z = Math.sin(time * speed) * 0.2;
+        } else {
+          // Default hovering pattern
+          // Gentle hovering motion (up and down)
+          const hoverAmplitude = 0.3;
+          const hoverSpeed = 2;
+          model.position.y = -center.y - 0.5 + Math.sin(time * hoverSpeed) * hoverAmplitude;
+          
+          // Gentle swaying motion (left and right)
+          const swayAmplitude = 0.2;
+          const swaySpeed = 1.5;
+          model.position.x = -center.x + Math.sin(time * swaySpeed) * swayAmplitude;
+          
+          // Subtle forward and backward motion
+          const depthAmplitude = 0.15;
+          const depthSpeed = 1.8;
+          model.position.z = -center.z + Math.sin(time * depthSpeed) * depthAmplitude;
+          
+          // Gentle rotation variations to simulate natural flight
+          const rotationAmplitude = 0.1;
+          const rotationSpeed = 2.2;
+          model.rotation.y = Math.PI * 1.65 + Math.sin(time * rotationSpeed) * rotationAmplitude;
+          model.rotation.x = Math.PI * 0.2 + Math.sin(time * rotationSpeed * 0.7) * (rotationAmplitude * 0.5);
+          model.rotation.z = Math.sin(time * rotationSpeed * 1.3) * (rotationAmplitude * 0.3);
+        }
+        
+        // Wing flapping effect (if the model has wing parts)
+        // This will work if the model has separate wing objects
+        model.traverse((child) => {
+          if (child.isMesh && child.name && child.name.toLowerCase().includes('wing')) {
+            const wingFlapSpeed = 15; // Fast wing flapping
+            const wingFlapAmplitude = 0.3;
+            child.rotation.z = Math.sin(time * wingFlapSpeed) * wingFlapAmplitude;
+          }
+        });
+        
+        // Add subtle scale pulsing to simulate breathing/life
+        const breatheAmplitude = 0.02;
+        const breatheSpeed = 3;
+        const breatheScale = 1 + Math.sin(time * breatheSpeed) * breatheAmplitude;
+        model.scale.set(1.5 * breatheScale, 1.5 * breatheScale, 1.5 * breatheScale);
+        
+        // Create trail effect
+        if (Math.random() < 0.3) { // 30% chance each frame
+          const trailGeometry = new THREE.SphereGeometry(0.02, 8, 8);
+          const trailMaterial = new THREE.MeshBasicMaterial({ 
+            color: 0xffff00, 
+            transparent: true, 
+            opacity: 0.6 
+          });
+          const trailParticle = new THREE.Mesh(trailGeometry, trailMaterial);
+          
+          // Position at bee's current location with slight offset
+          trailParticle.position.copy(model.position);
+          trailParticle.position.x += (Math.random() - 0.5) * 0.1;
+          trailParticle.position.y += (Math.random() - 0.5) * 0.1;
+          trailParticle.position.z += (Math.random() - 0.5) * 0.1;
+          
+          trailParticle.userData = { 
+            life: 1.0, 
+            decay: 0.02 + Math.random() * 0.02 
+          };
+          
+          scene.add(trailParticle);
+          trailParticles.push(trailParticle);
+        }
+        
+        // Update and remove trail particles
+        for (let i = trailParticles.length - 1; i >= 0; i--) {
+          const particle = trailParticles[i];
+          particle.userData.life -= particle.userData.decay;
+          particle.material.opacity = particle.userData.life * 0.6;
+          particle.scale.setScalar(particle.userData.life);
+          
+          if (particle.userData.life <= 0) {
+            scene.remove(particle);
+            particle.geometry.dispose();
+            particle.material.dispose();
+            trailParticles.splice(i, 1);
+          }
+        }
+      }
       
       renderer.render(scene, camera);
     };
@@ -218,6 +330,14 @@ export default function Bee3D({ size = 300 }) {
       if (animationId) {
         cancelAnimationFrame(animationId);
       }
+      
+      // Clean up trail particles
+      trailParticles.forEach(particle => {
+        scene.remove(particle);
+        particle.geometry.dispose();
+        particle.material.dispose();
+      });
+      trailParticles = [];
       
       if (renderer) {
         renderer.dispose();
