@@ -25,15 +25,26 @@ export default function Navbar3D({ initialMobile = false }) {
   const [menuOpen, setMenuOpen] = useState(false)
   const [showModel, setShowModel] = useState(false)
   const [isMobile, setIsMobile] = useState(initialMobile)
+  const [flyingPattern, setFlyingPattern] = useState('hover')
 
   useEffect(() => {
     setMounted(true)
+    
+    // Cycle through flying patterns every 8 seconds
+    const patternInterval = setInterval(() => {
+      setFlyingPattern(prev => {
+        const patterns = ['hover', 'circle', 'figure8'];
+        const currentIndex = patterns.indexOf(prev);
+        return patterns[(currentIndex + 1) % patterns.length];
+      });
+    }, 8000);
     
     // Cleanup function for the entire component
     return () => {
       setMounted(false)
       setMenuOpen(false)
       setShowModel(false)
+      clearInterval(patternInterval)
     }
   }, [])
 
@@ -87,7 +98,7 @@ export default function Navbar3D({ initialMobile = false }) {
     if (!mounted || !showModel) return null;
     
     try {
-      return <Bee3D size={isMobile ? 400 : 700} />; // Adjust size based on device
+      return <Bee3D size={isMobile ? 400 : 700} flyingPattern={flyingPattern} />; // Adjust size based on device
     } catch (error) {
       console.error("Error rendering 3D model:", error);
       return null;
@@ -304,6 +315,27 @@ export default function Navbar3D({ initialMobile = false }) {
               className="hidden md:block model-container"
             >
               {render3DModel()}
+            </div>
+            
+            {/* Flying pattern indicator */}
+            <div 
+              style={{
+                position: 'absolute',
+                top: '20px',
+                right: '20px',
+                background: 'rgba(0,0,0,0.7)',
+                color: '#c0ff00',
+                padding: '8px 12px',
+                borderRadius: '20px',
+                fontSize: '12px',
+                fontWeight: 'bold',
+                zIndex: 46,
+                textTransform: 'uppercase',
+                letterSpacing: '1px'
+              }}
+              className="hidden md:block"
+            >
+              Flight Mode: {flyingPattern === 'figure8' ? 'Figure-8' : flyingPattern}
             </div>
           </div>
           
